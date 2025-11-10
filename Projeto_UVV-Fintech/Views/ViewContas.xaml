@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:Projeto_UVV_Fintech.Views"
         mc:Ignorable="d"
         Title="ViewContas" Height="450" Width="800"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
     <Grid>
         
     </Grid>

@@ -6,12 +6,14 @@
         xmlns:local="clr-namespace:Projeto_UVV_Fintech"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
 
     <Grid>
-        <Button Content="Gerenciador de Transações" HorizontalAlignment="Left" Height="64" Margin="61,0,0,0" VerticalAlignment="Center" Width="202" Click="Button_Click"/>
-        <Button Content="Gerenciador de Contas" HorizontalAlignment="Center" Height="64" VerticalAlignment="Center" Width="202" Click="Button_Click_1"/>
-        <Button Content="Gerenciador de Clientes" HorizontalAlignment="Left" Height="64" Margin="535,0,0,0" VerticalAlignment="Center" Width="202" Click="Button_Click_2"/>
-
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Button Content="Gerenciador de Transações" Height="64" Margin="15" Width="202" Click="Button_Click" Cursor="Hand"/>
+            <Button Content="Gerenciador de Contas" Height="64" Margin="15" Width="202" Click="Button_Click_1" Cursor="Hand"/>
+            <Button Content="Gerenciador de Clientes" Height="64" Margin="15" Width="202" Click="Button_Click_2" Cursor="Hand"/>
+        </StackPanel>
     </Grid>
 </Window>

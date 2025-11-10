@@ -22,11 +22,28 @@ namespace Projeto_UVV_Fintech.Views
             InitializeComponent();
         }
 
+        private void CenterWindowOnScreen()
+        {
+            // Pega as dimensões da tela principal em que a janela está
+            double screenWidth = SystemParameters.PrimaryScreenWidth;
+            double screenHeight = SystemParameters.PrimaryScreenHeight;
+
+            // Pega as dimensões atuais da sua janela
+            double windowWidth = this.Width;
+            double windowHeight = this.Height;
+
+            // Calcula a nova posição X e Y para centralizar
+            this.Left = (screenWidth / 2) - (windowWidth / 2);
+            this.Top = (screenHeight / 2) - (windowHeight / 2);
+        }
+
+
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             this.Hide();
             ViewTransacoes janelaTransacoes = new();
             janelaTransacoes.ShowDialog();
+            CenterWindowOnScreen();
             this.Show();
         }
 
@@ -35,6 +52,7 @@ namespace Projeto_UVV_Fintech.Views
             this.Hide();
             ViewContas janelaContas = new();
             janelaContas.ShowDialog();
+            CenterWindowOnScreen();
             this.Show();
         }
 
@@ -43,6 +61,7 @@ namespace Projeto_UVV_Fintech.Views
             this.Hide();
             ViewClientes janelaContas = new();
             janelaContas.ShowDialog();
+            CenterWindowOnScreen();
             this.Show();
         }
     }
