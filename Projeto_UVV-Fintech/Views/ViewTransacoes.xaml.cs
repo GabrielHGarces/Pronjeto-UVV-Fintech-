@@ -195,7 +195,6 @@ namespace Projeto_UVV_Fintech.Views
 
         private void SearchButton_Click(object sender, RoutedEventArgs e)
         {
-            //string termo = CampoPesquisa.Text.ToLower();
             var filtrado = transacoes
                 .Where(p => (p.Id == ID || ID == null) &&
                 (p.Tipo.Contains(tipoTransacao) || tipoTransacao == "Todos" || tipoTransacao == null) &&
