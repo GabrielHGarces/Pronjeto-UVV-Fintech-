@@ -10,7 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Banco_de_Dados\" />
+    <Compile Remove="Banco_de_Dados\**" />
+    <EmbeddedResource Remove="Banco_de_Dados\**" />
+    <None Remove="Banco_de_Dados\**" />
+    <Page Remove="Banco_de_Dados\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,6 +26,10 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Model\Banco_Dados\Migrations\" />
   </ItemGroup>
 
 </Project>
