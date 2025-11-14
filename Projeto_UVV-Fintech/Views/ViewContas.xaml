@@ -5,10 +5,100 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Projeto_UVV_Fintech.Views"
         mc:Ignorable="d"
-        Title="ViewContas" Height="450" Width="800"
+        Title="ViewContas" Height="635" Width="800"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize">
-    <Grid>
-        
+
+    <Window.Resources>
+        <Style TargetType="TextBox" >
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="DatePicker" >
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="0,0,0,-6">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Height="75" Margin="0,10,0,0">
+            <Button x:Name="ReturnButton" Content="Gerenciador de Contas" Height="43" Margin="15" Width="345" Cursor="Hand" Click="ReturnButton_Click"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,90,0,0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5">
+                <Grid Width="166">
+                    <Label Content="Número da Agencia" HorizontalAlignment="Left" Margin="0,-18,0,0" VerticalAlignment="Top" Height="27"/>
+                    <TextBox VerticalContentAlignment="Center" x:Name="NAgencia" Text="" Height="21" Margin="5,5,5,5" PreviewTextInput="NumericTextBox_PreviewTextInput" DataObject.Pasting="NumericTextBox_Pasting" TextChanged="NAgencia_TextChanged"/>
+                </Grid>
+                <Grid Width="166">
+                    <Label Content="Numero da Conta" HorizontalAlignment="Left" Margin="0,-18,0,0" VerticalAlignment="Top" Height="27"/>
+                    <TextBox VerticalContentAlignment="Center" x:Name="NConta" Text="" Height="21" Margin="5,5,5,5" PreviewTextInput="NumericTextBox_PreviewTextInput" DataObject.Pasting="NumericTextBox_Pasting" TextChanged="NConta_TextChanged" />
+                </Grid>
+                <Grid Width="166">
+                    <Label Content="Tipo" HorizontalAlignment="Left" Margin="0,-18,0,0" VerticalAlignment="Top" Height="27"/>
+                    <ComboBox x:Name="TipoOpcoes" HorizontalAlignment="Center" VerticalAlignment="Center" Width="154" SelectionChanged="Type_SelectionChanged">
+                        <ComboBoxItem Content="Todos" IsSelected="True"/>
+                        <ComboBoxItem Content="CP"/>
+                        <ComboBoxItem Content="CC"/>
+                    </ComboBox>
+                </Grid>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5" Width="498">
+                <Grid Width="498">
+                    <Label Content="Nome do Cliente" HorizontalAlignment="Left" Margin="0,-18,0,0" VerticalAlignment="Top" Height="27"/>
+                    <TextBox x:Name="NomeCliente" VerticalContentAlignment="Center" Text="" Height="21" Margin="5,5,5,5" TextChanged="NomeCliente_TextChanged"/>
+                </Grid>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5">
+                <Grid Width="166">
+                    <Button x:Name="SaldoMaiorQue" Content="Maior Que" Margin="5,5,5,5" Height="21" Cursor="Hand" Click="SaldoMaiorQue_Click"/>
+                </Grid>
+                <Grid Width="166">
+                    <Label Content="Saldo Disponível" HorizontalAlignment="Left" Margin="0,-18,0,0" VerticalAlignment="Top" Height="27"/>
+                    <TextBox VerticalContentAlignment="Center" Text="" Height="21" Margin="5,5,5,5" x:Name="SaldoD" PreviewTextInput="NumericTextBox_PreviewTextInput" DataObject.Pasting="NumericTextBox_Pasting" LostFocus="NumericTextBox_LostFocus" GotFocus="NumericTextBox_GotFocus"/>
+                </Grid>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5">
+                <Grid Width="166">
+                    <Button x:Name="DataMaiorQue" Content="Maior Que" Margin="5,5,5,5" Height="21" Cursor="Hand" Click="DataMaiorQue_Click"/>
+                </Grid>
+                <Grid Width="166">
+                    <Label Content="Data De Adesão" HorizontalAlignment="Left" Margin="0,-18,0,0" VerticalAlignment="Top" Height="27"/>
+                    <DatePicker x:Name="DataInput" SelectedDate="{Binding DataSelecionada, Mode=TwoWay}" Margin="5" SelectedDateChanged="DataInput_SelectedDateChanged"/>
+                </Grid>
+            </StackPanel>
+
+
+        </StackPanel>
+
+
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Top" Height="330" Width="756" Margin="0,259,0,0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <Button x:Name="AdicionarConta" Content="( + )  Nova Conta" Height="43"  Cursor="Hand" Background="White" Width="187" Click="AdicionarConta_Click"/>
+                <Button x:Name="SearchButton" Content="Pesquisar" Height="43"  Cursor="Hand" Background="White" Width="187" Click="SearchButton_Click"/>
+            </StackPanel>
+            <DataGrid x:Name="TabelaContas"
+                AutoGenerateColumns="False"
+                HeadersVisibility="All"
+                CanUserAddRows="False"         
+                IsReadOnly="True" Height="287">
+                <DataGrid.CellStyle>
+                    <Style TargetType="DataGridCell">
+                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                    </Style>
+                </DataGrid.CellStyle>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Agencia" Binding="{Binding Agencia}" Width="0.7*" />
+                    <DataGridTextColumn Header="Numero da conta" Binding="{Binding NumConta}" Width="1.3*" />
+                    <DataGridTextColumn Header="Tipo" Binding="{Binding Tipo}" Width="0.5*" />
+                    <DataGridTextColumn Header="Data de Adesão" Binding="{Binding DataDeAdesao, StringFormat={}{0:dd/MM/yyyy HH:mm}}" Width="1.5*" />
+                    <DataGridTextColumn Header="Saldo" Binding="{Binding Saldo, StringFormat={}{0:C}, ConverterCulture=pt-BR}" Width="1.3*" />
+                    <DataGridTextColumn Header="Nome Do Cliente" Binding="{Binding Nome}" Width="3.5*" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </StackPanel>
+
+
+
+
     </Grid>
 </Window>

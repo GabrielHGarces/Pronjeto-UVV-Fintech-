@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Projeto_UVV_Fintech.Model.Banco_Dados.Entities;
+using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,14 +17,223 @@ using System.Windows.Shapes;
 
 namespace Projeto_UVV_Fintech.Views
 {
-    /// <summary>
-    /// Lógica interna para ViewContas.xaml
-    /// </summary>
     public partial class ViewContas : Window
     {
+        //Filters
+        public int? numeroConta = null;
+        public int? numeroAgencia = null;
+        public string? tipoConta = "Todos";
+        public string? nomeTitular = "";
+        public double saldo = 0;
+        public DateTime? dataSelecionada = null;
+        public bool saldoMaiorQue = true;
+        public bool dataMaiorQue = true;
+        public List<Conta> contas;
+
         public ViewContas()
         {
             InitializeComponent();
+
+            contas = new List<Conta>
+            {
+                new Conta { Agencia = 1234, NumConta = 56789, Tipo = "CC", DataDeAdesao = DateTime.Now.AddMonths(-2), Saldo = 182763, Nome = "Irineu"},
+                new Conta { Agencia = 2345, NumConta = 67890, Tipo = "CP", DataDeAdesao = DateTime.Now.AddMonths(-1), Saldo = 182763, Nome = "Irineu" },
+                new Conta { Agencia = 3456, NumConta = 78901, Tipo = "CP", DataDeAdesao = DateTime.Now, Saldo = 182763, Nome = "Irineu" },
+            };
+
+
+            TabelaContas.ItemsSource = contas;
+        }
+
+        public class Conta
+        {
+            public int NumConta { get; set; }
+            public int Agencia { get; set; }
+            public string Tipo { get; set; } = "";
+            public DateTime DataDeAdesao { get; set; }
+            public int Saldo { get; set; }
+            public string Nome { get; set; } = "";
+        }
+
+        private void DataInput_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            dataSelecionada = DataInput.SelectedDate;
+        }
+
+        private void NumericTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            SaldoD.Text = "";
+        }
+
+        private void NumericTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (double.TryParse(SaldoD.Text, out saldo))
+            {
+                saldo = double.Parse(SaldoD.Text);
+            }
+            else
+            {
+                Console.WriteLine("Erro ao converter para decimal!!!");
+            }
+
+            // Formata o valor como moeda brasileira (R$)
+            string valorFormatado = String.Format(CultureInfo.GetCultureInfo("pt-BR"), "{0:C}", saldo);
+
+            // Exibe o resultado: R$ 123.456,78
+            Console.WriteLine(valorFormatado);
+
+            SaldoD.Text = valorFormatado;
+            if (saldo == 0)
+            {
+                SaldoD.Text = "";
+            }
+        }
+
+        private void NumericTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+
+            bool isDigit = Char.IsDigit(e.Text, 0);
+
+            string decimalSeparator = System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator;
+
+            bool isSeparator = e.Text == ",";
+
+            if (isDigit)
+            {
+                e.Handled = false;
+            }
+            else if (isSeparator)
+            {
+                if (textBox.Text.Contains(","))
+                {
+                    e.Handled = true;
+                }
+                else
+                {
+                    e.Handled = false;
+                }
+            }
+            else
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void NumericTextBox_Pasting(object sender, DataObjectPastingEventArgs e)
+        {
+            if (e.DataObject.GetDataPresent(typeof(string)))
+            {
+                string text = (string)e.DataObject.GetData(typeof(string));
+                if (!System.Text.RegularExpressions.Regex.IsMatch(text, "[0-9]+"))
+                {
+                    e.CancelCommand(); // Cancela o comando de colar
+                }
+            }
+            else
+            {
+                e.CancelCommand(); // Cancela se não for texto
+            }
+        }
+
+        private void AdicionarConta_Click(object sender, RoutedEventArgs e)
+        {
+            this.Opacity = 0.5;
+
+            var dialog = new ContaDialog { Owner = this };
+            bool? resultado = dialog.ShowDialog();
+
+            this.Opacity = 1;
+
+            if (resultado == true)
+            {
+                int IdCliente = dialog.IdCliente;
+                string tipoConta = dialog.tipoConta;
+
+                MessageBox.Show($"Conta criada:\nId Cliente: {IdCliente}\nTipo Conta: {tipoConta}");
+            }
+        }
+
+        private void ReturnButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void NAgencia_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            numeroAgencia = int.TryParse(NAgencia.Text, out int NumAgencia) ? NumAgencia : null;
+        }
+
+        private void NConta_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            numeroConta = int.TryParse(NConta.Text, out int nContas) ? nContas : null;
+        }
+
+        private void NomeCliente_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            nomeTitular = NomeCliente.Text;
+        }
+
+        private void SearchButton_Click(object sender, RoutedEventArgs e)
+        {
+            var filtrado = contas
+                .Where(p => (p.NumConta.ToString().Contains(numeroConta.ToString()) || numeroConta == null) &&
+                (p.Tipo.Contains(tipoConta) || tipoConta == "Todos" || tipoConta == null) &&
+                (p.Agencia.ToString().Contains(numeroAgencia.ToString())  || numeroAgencia == null) &&
+                (p.Nome.Contains(nomeTitular) || nomeTitular == null) &&
+                ((saldoMaiorQue ? p.Saldo >= saldo : p.Saldo <= saldo) || saldo == 0) &&
+                ((dataMaiorQue ? p.DataDeAdesao >= dataSelecionada : p.DataDeAdesao <= dataSelecionada) || dataSelecionada == null))
+                .ToList();
+
+            TabelaContas.ItemsSource = filtrado;
+        }
+
+
+        //public int numeroConta;
+        //public int numeroAgencia;
+        //public string tipoConta = "Todos";
+        //public string nomeTitular;
+        //public double saldo;
+        //public DateTime? dataSelecionada;
+        //public bool saldoMaiorQue = true;
+        //public bool dataMaiorQue = true;
+
+        private void DataMaiorQue_Click(object sender, RoutedEventArgs e)
+        {
+            if (dataMaiorQue)
+            {
+                DataMaiorQue.Content = "Menor Que";
+                dataMaiorQue = false;
+            }
+            else
+            {
+                DataMaiorQue.Content = "Maior Que";
+                dataMaiorQue = true;
+            }
+        }
+
+        private void SaldoMaiorQue_Click(object sender, RoutedEventArgs e)
+        {
+            if (saldoMaiorQue)
+            {
+                SaldoMaiorQue.Content = "Menor Que";
+                saldoMaiorQue = false;
+            }
+            else
+            {
+                SaldoMaiorQue.Content = "Maior Que";
+                saldoMaiorQue = true;
+            }
+        }
+
+        private void Type_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ComboBoxItem selectedItem = (ComboBoxItem)TipoOpcoes.SelectedItem;
+            if (selectedItem != null)
+            {
+                // Salva o conteúdo (texto) na variável privada
+                tipoConta = selectedItem.Content.ToString();
+            }
         }
     }
 }
