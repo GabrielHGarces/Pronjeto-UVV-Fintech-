@@ -228,9 +228,24 @@ namespace Projeto_UVV_Fintech.Views
 
         private void NameTableButton_Click(object sender, RoutedEventArgs e)
         {
+            this.Hide();
+            var window = new ViewClientes { Owner = this };
+            window.ShowDialog();
+            this.Close();
+
+        }
+
+        private void NumeroContaButton_Click(object sender, RoutedEventArgs e)
+        {
+            Button button = sender as Button;
+
             this.Opacity = 0.5;
 
-            var dialog = new ContaTransacaoDialog { Owner = this };
+            //var dialog = new ContaTransacaoDialog { Owner = this };
+            //bool? resultado = dialog.ShowDialog(int.Parse(button.Content.ToString()));
+
+            // ViewContas.xaml.cs
+            var dialog = new ContaTransacaoDialog(int.Parse(button.Content.ToString())) { Owner = this };
             bool? resultado = dialog.ShowDialog();
 
             this.Opacity = 1;

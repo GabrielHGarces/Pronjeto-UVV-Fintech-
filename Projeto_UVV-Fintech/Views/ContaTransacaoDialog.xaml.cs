@@ -12,14 +12,57 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Globalization;
 
 namespace Projeto_UVV_Fintech.Views
 {
     public partial class ContaTransacaoDialog : Window
     {
+        public int NumConta { get; set; }
+        public List<Conta> contas { get; set; }
+
         public ContaTransacaoDialog()
         {
+            contas = new List<Conta>();
             InitializeComponent();
+        }
+
+        public ContaTransacaoDialog(int NumConta)
+        {
+            InitializeComponent();
+            this.NumConta = NumConta;
+            contas = new List<Conta>
+            {
+                new Conta { Agencia = 1234, NumConta = 56789, Tipo = "CC", DataDeAdesao = DateTime.Now.AddMonths(-2), Saldo = 182763, Nome = "Irineu"},
+                new Conta { Agencia = 2345, NumConta = 67890, Tipo = "CP", DataDeAdesao = DateTime.Now.AddMonths(-1), Saldo = 182763, Nome = "Irineu" },
+                new Conta { Agencia = 3456, NumConta = 78901, Tipo = "CP", DataDeAdesao = DateTime.Now, Saldo = 182763, Nome = "Irineu" },
+            };
+
+            SelecionarCLiente(NumConta);
+        }
+
+        public class Conta
+        {
+            public int NumConta { get; set; }
+            public int Agencia { get; set; }
+            public string Tipo { get; set; } = "";
+            public DateTime DataDeAdesao { get; set; }
+            public int Saldo { get; set; }
+            public string Nome { get; set; } = "";
+        }
+
+        private void SelecionarCLiente(int NumConta)
+        {
+            var conta = contas.FirstOrDefault(c => c.NumConta == NumConta);
+            if (conta == null) return;
+
+            contaInput.Text = conta.NumConta.ToString();
+            TipoInput.Text = conta.Tipo;
+            // Formata como moeda BR: "R$ 1.234,56"
+            SaldoInput.Text = conta.Saldo.ToString("C", new CultureInfo("pt-BR"));
+            DataDeCriacaoInput.Text = conta.DataDeAdesao.ToString(new CultureInfo("pt-BR"));
+            NunAgenciaInput.Text = conta.Agencia.ToString();
+            NomeCliente.Text = conta.Nome;
         }
 
         private void SomenteNumeros(object sender, System.Windows.Input.TextCompositionEventArgs e)
