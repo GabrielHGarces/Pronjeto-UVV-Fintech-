@@ -28,8 +28,4 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Model\Banco_Dados\Migrations\" />
-  </ItemGroup>
-
 </Project>

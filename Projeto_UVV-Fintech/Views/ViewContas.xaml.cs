@@ -1,4 +1,4 @@
-﻿using Projeto_UVV_Fintech.Model.Banco_Dados.Entities;
+﻿using Projeto_UVV_Fintech.Banco_Dados.Entities;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -188,16 +188,6 @@ namespace Projeto_UVV_Fintech.Views
             TabelaContas.ItemsSource = filtrado;
         }
 
-
-        //public int numeroConta;
-        //public int numeroAgencia;
-        //public string tipoConta = "Todos";
-        //public string nomeTitular;
-        //public double saldo;
-        //public DateTime? dataSelecionada;
-        //public bool saldoMaiorQue = true;
-        //public bool dataMaiorQue = true;
-
         private void DataMaiorQue_Click(object sender, RoutedEventArgs e)
         {
             if (dataMaiorQue)
@@ -233,6 +223,24 @@ namespace Projeto_UVV_Fintech.Views
             {
                 // Salva o conteúdo (texto) na variável privada
                 tipoConta = selectedItem.Content.ToString();
+            }
+        }
+
+        private void NameTableButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Opacity = 0.5;
+
+            var dialog = new ContaDialog { Owner = this };
+            bool? resultado = dialog.ShowDialog();
+
+            this.Opacity = 1;
+
+            if (resultado == true)
+            {
+                int IdCliente = dialog.IdCliente;
+                string tipoConta = dialog.tipoConta;
+
+                MessageBox.Show($"Conta criada:\nId Cliente: {IdCliente}\nTipo Conta: {tipoConta}");
             }
         }
     }

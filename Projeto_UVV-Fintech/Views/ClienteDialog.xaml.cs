@@ -21,6 +21,8 @@ namespace Projeto_UVV_Fintech.Views
     /// </summary>
     public partial class ClienteDialog : Window
     {
+
+        public string NomeInput { get; set; }
         public string NomeCliente { get; private set; }
         public string TelefoneCliente { get; private set; }
         public string CepCliente { get; private set; }
@@ -42,34 +44,80 @@ namespace Projeto_UVV_Fintech.Views
 
         private void Salvar_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(NomeInput.Text))
-            {
-                MessageBox.Show("O campo Nome não pode estar vazio.");
-                return;
-            }
-            else if (string.IsNullOrWhiteSpace(TelefoneInput.Text))
-            {
-                MessageBox.Show("O campo Telefone não pode estar vazio.");
-                return;
-            }
-            else if (string.IsNullOrWhiteSpace(CepInput.Text))
-            {
-                MessageBox.Show("O campo CEP não pode estar vazio.");
-                return;
-            }
+            //if (string.IsNullOrWhiteSpace(NomeInput.Text))
+            //{
+            //    MessageBox.Show("O campo Nome não pode estar vazio.");
+            //    return;
+            //}
+            //else if (string.IsNullOrWhiteSpace(TelefoneInput.Text))
+            //{
+            //    MessageBox.Show("O campo Telefone não pode estar vazio.");
+            //    return;
+            //}
+            //else if (string.IsNullOrWhiteSpace(CepInput.Text))
+            //{
+            //    MessageBox.Show("O campo CEP não pode estar vazio.");
+            //    return;
+            //}
 
-            NomeCliente = NomeInput.Text;
-            TelefoneCliente = TelefoneInput.Text;
-            CepCliente = CepInput.Text;
+            //NomeCliente = NomeInput.Text;
+            //TelefoneCliente = TelefoneInput.Text;
+            //CepCliente = CepInput.Text;
 
-            DialogResult = true;
-            Close();
+            //DialogResult = true;
+            //Close();
         }
 
         private void Cancelar_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = false;
             Close();
+        }
+
+        private void NumericTextBox_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+
+            bool isDigit = Char.IsDigit(e.Text, 0);
+
+            string decimalSeparator = System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator;
+            bool isSeparator = e.Text == ",";
+
+            if (isDigit)
+            {
+                e.Handled = false;
+            }
+            else if (isSeparator)
+            {
+                if (textBox.Text.Contains(","))
+                {
+                    e.Handled = true;
+                }
+                else
+                {
+                    e.Handled = false;
+                }
+            }
+            else
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void NumericTextBox_Pasting(object sender, DataObjectPastingEventArgs e)
+        {
+            if (e.DataObject.GetDataPresent(typeof(string)))
+            {
+                string text = (string)e.DataObject.GetData(typeof(string));
+                if (!System.Text.RegularExpressions.Regex.IsMatch(text, "[0-9]+"))
+                {
+                    e.CancelCommand();
+                }
+            }
+            else
+            {
+                e.CancelCommand();
+            }
         }
     }
 

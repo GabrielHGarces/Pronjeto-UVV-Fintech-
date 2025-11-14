@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace Projeto_UVV_Fintech.Model.Banco_Dados.Entities
+namespace Projeto_UVV_Fintech.Banco_Dados.Entities
 {
     public enum TipoTransacao
     {

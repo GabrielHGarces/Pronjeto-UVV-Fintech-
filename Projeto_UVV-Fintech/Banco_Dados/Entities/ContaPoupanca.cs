@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 
 
-namespace Projeto_UVV_Fintech.Model.Banco_Dados.Entities
+namespace Projeto_UVV_Fintech.Banco_Dados.Entities
 {
     internal class ContaPoupanca : Conta
     {
@@ -35,7 +35,7 @@ namespace Projeto_UVV_Fintech.Model.Banco_Dados.Entities
             if (SaquesRealizadosNoMes > SAQUES_GRATIS)
             {
                 double taxa = valor * TAXA_SAQUE;
-                Saldo -= (valor + taxa);
+                Saldo -= valor + taxa;
             }
             else
             {

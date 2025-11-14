@@ -92,7 +92,17 @@
                     <DataGridTextColumn Header="Tipo" Binding="{Binding Tipo}" Width="0.5*" />
                     <DataGridTextColumn Header="Data de Adesão" Binding="{Binding DataDeAdesao, StringFormat={}{0:dd/MM/yyyy HH:mm}}" Width="1.5*" />
                     <DataGridTextColumn Header="Saldo" Binding="{Binding Saldo, StringFormat={}{0:C}, ConverterCulture=pt-BR}" Width="1.3*" />
-                    <DataGridTextColumn Header="Nome Do Cliente" Binding="{Binding Nome}" Width="3.5*" />
+                    <DataGridTemplateColumn Header="Nome Do Cliente" Width="3.5*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button x:Name="NameTableButton" Content="{Binding Nome}"
+                                    Padding="0"
+                                    Foreground="Black"
+                                    HorizontalAlignment="Stretch"
+                                    Cursor="Hand" Click="NameTableButton_Click"/>     
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
         </StackPanel>

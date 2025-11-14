@@ -15,7 +15,7 @@ using System.Collections.Generic;
 
 
 
-namespace Projeto_UVV_Fintech.Model.Banco_Dados.Entities
+namespace Projeto_UVV_Fintech.Banco_Dados.Entities
 {
     internal abstract class Conta
     {

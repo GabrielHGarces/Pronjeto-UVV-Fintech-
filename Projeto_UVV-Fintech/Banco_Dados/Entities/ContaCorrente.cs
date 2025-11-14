@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using System;
 
-namespace Projeto_UVV_Fintech.Model.Banco_Dados.Entities
+namespace Projeto_UVV_Fintech.Banco_Dados.Entities
 {
     internal class ContaCorrente : Conta
     {
