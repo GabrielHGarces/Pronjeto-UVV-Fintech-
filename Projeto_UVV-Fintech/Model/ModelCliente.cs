@@ -27,6 +27,8 @@ namespace Projeto_UVV_Fintech.Model
                 
             }
 
+            
+
         }
         //Liga uma conta a um cliente
 

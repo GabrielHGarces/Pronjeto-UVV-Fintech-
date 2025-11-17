@@ -13,17 +13,22 @@ namespace Projeto_UVV_Fintech.Model
         {
             using var context = new DB_Context();
             Transacao novo = new Transacao();
+            var contaAssociada =context.Contas.Find(contaId);
             novo.Tipo = tipo;
             novo.Valor = valor;
             novo.RemetenteId = remetenteId;
             novo.DestinatarioId = destinatarioId;
             novo.ContaId = contaId;
+            novo.Conta = contaAssociada;
+
 
             context.Transacoes.Add(novo);
             context.SaveChanges();
 
 
         }
+
+
         
         
     }

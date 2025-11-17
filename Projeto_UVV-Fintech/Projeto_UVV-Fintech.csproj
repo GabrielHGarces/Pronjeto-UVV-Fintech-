@@ -17,6 +17,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Model\ModelConta.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Model\NewFile1.txt" />
   </ItemGroup>
 

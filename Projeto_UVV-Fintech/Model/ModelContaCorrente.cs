@@ -13,20 +13,26 @@ namespace Projeto_UVV_Fintech.Model
         public void  InserirCorrente(double saldo, int clienteId)
         {
             using var context = new DB_Context();
+            
             Conta novo = new ContaCorrente();
+            var clienteAssociado = context.Clientes.Find(clienteId);
             novo.Saldo = saldo;
             novo.ClienteId = clienteId;
+            novo.Cliente = clienteAssociado;
 
             context.Contas.Add(novo);
             context.SaveChanges();
 
+            
+
+
 
         }
-        
-            
 
-            
-        
+
+
+
+
 
     }
 }
