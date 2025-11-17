@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Projeto_UVV_Fintech.Model
 {
@@ -27,10 +28,21 @@ namespace Projeto_UVV_Fintech.Model
                 
             }
 
-
-            
-
+            public void todosClientes()
+            {
+                using var context = new DB_Context();
+                var clientes = context.Clientes.ToList();
+                foreach (var cliente in clientes)
+                {
+                    MessageBox.Show($"ID: {cliente.Id}, Nome: {cliente.Nome}, Telefone: {cliente.Telefone}, Data de Nascimento: {cliente.DataNascimento}, CEP: {cliente.CEP}");
+                        
+                }
         }
+
+
+
+
+    }
        
 
     

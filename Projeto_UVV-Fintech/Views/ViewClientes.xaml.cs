@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Projeto_UVV_Fintech.Model;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -211,17 +213,20 @@ namespace Projeto_UVV_Fintech.Views
 
         private void SearchButton_Click_1(object sender, RoutedEventArgs e)
         {
-            var filtrado = clientes
-                .Where(p =>
-                (p.Id.ToString().Contains(ClientID.ToString()) || ClientID == null) &&
-                (p.Telefone.Contains(Telefone) || Telefone == "") &&
-                (p.Cep.Contains(Cep) || Cep == "") &&
-                (p.Nome.Contains(ClientName) || ClientName == null) &&
-                (p.NumeroDeContas.ToString().Contains(NumeroContas.ToString()) || NumeroContas == null) &&
-                ((MaiorQueData ? p.DataDeAdesao >= DataAdesao : p.DataDeAdesao <= DataAdesao) || DataAdesao == null))
-                .ToList();
+            //var filtrado = clientes
+            //    .Where(p =>
+            //    (p.Id.ToString().Contains(ClientID.ToString()) || ClientID == null) &&
+            //    (p.Telefone.Contains(Telefone) || Telefone == "") &&
+            //    (p.Cep.Contains(Cep) || Cep == "") &&
+            //    (p.Nome.Contains(ClientName) || ClientName == null) &&
+            //    (p.NumeroDeContas.ToString().Contains(NumeroContas.ToString()) || NumeroContas == null) &&
+            //    ((MaiorQueData ? p.DataDeAdesao >= DataAdesao : p.DataDeAdesao <= DataAdesao) || DataAdesao == null))
+            //    .ToList();
 
-            TabelaClientes.ItemsSource = filtrado;
+            //TabelaClientes.ItemsSource = filtrado;
+            ModelCliente modelCliente = new ModelCliente();
+            modelCliente.InserirCliente("Gostosin guanabara", DateTime.Now, "123", "456");
+            modelCliente.todosClientes();
         }
 
         private void NumeroDeContas_Click(object sender, RoutedEventArgs e)
