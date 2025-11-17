@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Projeto_UVV_Fintech.Controller
+namespace Projeto_UVV_Fintech.Model
 {
-    internal class FileName
+    internal class Transacao
     {
     }
 }
