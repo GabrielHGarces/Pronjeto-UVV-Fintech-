@@ -186,6 +186,7 @@ namespace Projeto_UVV_Fintech.Views
 
             if (resultado == true)
             {
+                //Chamar ContaController.CriarConta();
                 int IdCliente = dialog.IdCliente;
                 string tipoConta = dialog.tipoConta;
 
