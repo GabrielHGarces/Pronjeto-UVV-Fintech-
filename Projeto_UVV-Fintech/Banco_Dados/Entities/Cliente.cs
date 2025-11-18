@@ -35,6 +35,6 @@ namespace Projeto_UVV_Fintech.Banco_Dados.Entities
         //Um CLiente pode ter várias contas
         public ICollection<Conta> Contas { get; set; } = [];
         
-        
+        public Cliente() { }
     }
 }

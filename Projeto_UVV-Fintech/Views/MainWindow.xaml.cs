@@ -17,6 +17,7 @@ namespace Projeto_UVV_Fintech.Views
         public MainWindow()
         {
             InitializeComponent();
+            
         }
 
         private void CenterWindowOnScreen()

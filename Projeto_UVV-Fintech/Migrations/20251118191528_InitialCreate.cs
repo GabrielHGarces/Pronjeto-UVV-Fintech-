@@ -15,12 +15,12 @@ namespace Projeto_UVV_Fintech.Migrations
                 name: "Clientes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Nome = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    DataNascimento = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CEP = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
-                    Telefone = table.Column<string>(type: "nvarchar(9)", maxLength: 9, nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Nome = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    DataNascimento = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    CEP = table.Column<string>(type: "TEXT", maxLength: 8, nullable: false),
+                    Telefone = table.Column<string>(type: "TEXT", maxLength: 9, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -31,15 +31,13 @@ namespace Projeto_UVV_Fintech.Migrations
                 name: "Contas",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Saldo = table.Column<double>(type: "float", nullable: false),
-                    DataCriacao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CAST(GETDATE() AS date)"),
-                    ClienteId = table.Column<int>(type: "int", nullable: false),
-                    TipoConta = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
-                    UltimaCobranca = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    SaquesRealizadosNoMes = table.Column<int>(type: "int", nullable: true),
-                    UltimoRendimento = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Saldo = table.Column<double>(type: "REAL", nullable: false),
+                    DataCriacao = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "date('now')"),
+                    ClienteId = table.Column<int>(type: "INTEGER", nullable: false),
+                    TipoConta = table.Column<string>(type: "TEXT", maxLength: 8, nullable: false),
+                    SaquesRealizadosNoMes = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -56,14 +54,14 @@ namespace Projeto_UVV_Fintech.Migrations
                 name: "Transacoes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Tipo = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Valor = table.Column<double>(type: "float", nullable: false),
-                    RemetenteId = table.Column<int>(type: "int", nullable: false),
-                    DestinatarioId = table.Column<int>(type: "int", nullable: false),
-                    DataHoraTransacao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
-                    ContaId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Tipo = table.Column<int>(type: "INTEGER", nullable: false),
+                    Valor = table.Column<double>(type: "REAL", nullable: false),
+                    RemetenteId = table.Column<int>(type: "INTEGER", nullable: false),
+                    DestinatarioId = table.Column<int>(type: "INTEGER", nullable: false),
+                    DataHoraTransacao = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    ContaId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {

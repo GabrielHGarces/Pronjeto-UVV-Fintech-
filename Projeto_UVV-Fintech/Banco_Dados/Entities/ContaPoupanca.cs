@@ -15,17 +15,10 @@ namespace Projeto_UVV_Fintech.Banco_Dados.Entities
         public const int SAQUES_GRATIS = 2;
 
         public int SaquesRealizadosNoMes { get; set; } = 0;
-        public DateTime UltimoRendimento { get; set; } = DateTime.Now;
+        
 
         // Método que aplica rendimento mensal (a cada 30 dias)
-        public void AplicarRendimento()
-        {
-            if ((DateTime.Now - UltimoRendimento).TotalDays >= 30)
-            {
-                Saldo += Saldo * TAXA_RENDIMENTO;
-                UltimoRendimento = DateTime.Now;
-            }
-        }
+        
 
         // Método que desconta taxa de saque se ultrapassar os 2 gratuitos
         public void RegistrarSaque(double valor)
@@ -46,7 +39,7 @@ namespace Projeto_UVV_Fintech.Banco_Dados.Entities
         public override string ToString()
         {
             return base.ToString() +
-                   $", Tipo: Poupança, Saques no mês: {SaquesRealizadosNoMes}, Último rendimento: {UltimoRendimento:d}";
+                   $", Tipo: Poupança, Saques no mês: {SaquesRealizadosNoMes}: ";
         }
     }
 }

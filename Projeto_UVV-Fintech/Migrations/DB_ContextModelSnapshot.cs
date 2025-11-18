@@ -2,84 +2,71 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Projeto_UVV_Fintech.Banco_Dados.Entities;
-
 
 #nullable disable
 
 namespace Projeto_UVV_Fintech.Migrations
 {
     [DbContext(typeof(DB_Context))]
-    [Migration("20251114130820_InitialCreate")]
-    partial class InitialCreate
+    partial class DB_ContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.11")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.11");
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("Projeto_UVV_Fintech.Model.Banco_Dados.Entities.Cliente", b =>
+            modelBuilder.Entity("Projeto_UVV_Fintech.Banco_Dados.Entities.Cliente", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("CEP")
                         .IsRequired()
                         .HasMaxLength(8)
-                        .HasColumnType("nvarchar(8)");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("DataNascimento")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Telefone")
                         .IsRequired()
                         .HasMaxLength(9)
-                        .HasColumnType("nvarchar(9)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
                     b.ToTable("Clientes", (string)null);
                 });
 
-            modelBuilder.Entity("Projeto_UVV_Fintech.Model.Banco_Dados.Entities.Conta", b =>
+            modelBuilder.Entity("Projeto_UVV_Fintech.Banco_Dados.Entities.Conta", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("ClienteId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("DataCriacao")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("CAST(GETDATE() AS date)");
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("date('now')");
 
                     b.Property<double>("Saldo")
-                        .HasColumnType("float");
+                        .HasColumnType("REAL");
 
                     b.Property<string>("TipoConta")
                         .IsRequired()
                         .HasMaxLength(8)
-                        .HasColumnType("nvarchar(8)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -92,34 +79,31 @@ namespace Projeto_UVV_Fintech.Migrations
                     b.UseTphMappingStrategy();
                 });
 
-            modelBuilder.Entity("Projeto_UVV_Fintech.Model.Banco_Dados.Entities.Transacao", b =>
+            modelBuilder.Entity("Projeto_UVV_Fintech.Banco_Dados.Entities.Transacao", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("ContaId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("DataHoraTransacao")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<int>("DestinatarioId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("RemetenteId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
-                    b.Property<string>("Tipo")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Tipo")
+                        .HasColumnType("INTEGER");
 
                     b.Property<double>("Valor")
-                        .HasColumnType("float");
+                        .HasColumnType("REAL");
 
                     b.HasKey("Id");
 
@@ -128,36 +112,30 @@ namespace Projeto_UVV_Fintech.Migrations
                     b.ToTable("Transacoes", (string)null);
                 });
 
-            modelBuilder.Entity("Projeto_UVV_Fintech.Model.Banco_Dados.Entities.ContaCorrente", b =>
+            modelBuilder.Entity("Projeto_UVV_Fintech.Banco_Dados.Entities.ContaCorrente", b =>
                 {
-                    b.HasBaseType("Projeto_UVV_Fintech.Model.Banco_Dados.Entities.Conta");
-
-                    b.Property<DateTime>("UltimaCobranca")
-                        .HasColumnType("datetime2");
+                    b.HasBaseType("Projeto_UVV_Fintech.Banco_Dados.Entities.Conta");
 
                     b.ToTable("Contas", (string)null);
 
                     b.HasDiscriminator().HasValue("Corrente");
                 });
 
-            modelBuilder.Entity("Projeto_UVV_Fintech.Model.Banco_Dados.Entities.ContaPoupanca", b =>
+            modelBuilder.Entity("Projeto_UVV_Fintech.Banco_Dados.Entities.ContaPoupanca", b =>
                 {
-                    b.HasBaseType("Projeto_UVV_Fintech.Model.Banco_Dados.Entities.Conta");
+                    b.HasBaseType("Projeto_UVV_Fintech.Banco_Dados.Entities.Conta");
 
                     b.Property<int>("SaquesRealizadosNoMes")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("UltimoRendimento")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("INTEGER");
 
                     b.ToTable("Contas", (string)null);
 
                     b.HasDiscriminator().HasValue("Poupanca");
                 });
 
-            modelBuilder.Entity("Projeto_UVV_Fintech.Model.Banco_Dados.Entities.Conta", b =>
+            modelBuilder.Entity("Projeto_UVV_Fintech.Banco_Dados.Entities.Conta", b =>
                 {
-                    b.HasOne("Projeto_UVV_Fintech.Model.Banco_Dados.Entities.Cliente", "Cliente")
+                    b.HasOne("Projeto_UVV_Fintech.Banco_Dados.Entities.Cliente", "Cliente")
                         .WithMany("Contas")
                         .HasForeignKey("ClienteId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -166,9 +144,9 @@ namespace Projeto_UVV_Fintech.Migrations
                     b.Navigation("Cliente");
                 });
 
-            modelBuilder.Entity("Projeto_UVV_Fintech.Model.Banco_Dados.Entities.Transacao", b =>
+            modelBuilder.Entity("Projeto_UVV_Fintech.Banco_Dados.Entities.Transacao", b =>
                 {
-                    b.HasOne("Projeto_UVV_Fintech.Model.Banco_Dados.Entities.Conta", "Conta")
+                    b.HasOne("Projeto_UVV_Fintech.Banco_Dados.Entities.Conta", "Conta")
                         .WithMany("Transacoes")
                         .HasForeignKey("ContaId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -177,12 +155,12 @@ namespace Projeto_UVV_Fintech.Migrations
                     b.Navigation("Conta");
                 });
 
-            modelBuilder.Entity("Projeto_UVV_Fintech.Model.Banco_Dados.Entities.Cliente", b =>
+            modelBuilder.Entity("Projeto_UVV_Fintech.Banco_Dados.Entities.Cliente", b =>
                 {
                     b.Navigation("Contas");
                 });
 
-            modelBuilder.Entity("Projeto_UVV_Fintech.Model.Banco_Dados.Entities.Conta", b =>
+            modelBuilder.Entity("Projeto_UVV_Fintech.Banco_Dados.Entities.Conta", b =>
                 {
                     b.Navigation("Transacoes");
                 });

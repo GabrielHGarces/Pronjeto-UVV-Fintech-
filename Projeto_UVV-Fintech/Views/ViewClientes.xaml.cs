@@ -1,8 +1,10 @@
 ﻿using Projeto_UVV_Fintech.Controller;
+using Projeto_UVV_Fintech.Repository;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -202,6 +204,9 @@ namespace Projeto_UVV_Fintech.Views
             //    .ToList();
 
             //TabelaClientes.ItemsSource = filtrado;
+            //ClienteRepository modelCliente = new ClienteRepository();
+            //modelCliente.CriarCliente("Gostosin guanabara", DateTime.Now, "123", "456");
+            //modelCliente.ListarClientes();
 
             clienteController.FiltrarClientes(
                 ClientID, Telefone, Cep, ClientName,
