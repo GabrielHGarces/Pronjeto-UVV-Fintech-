@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,20 +18,24 @@ namespace Projeto_UVV_Fintech.Banco_Dados.Entities
         public DbSet<Conta> Contas { get; set; } = null!;
         public DbSet<Transacao> Transacoes { get; set; } = null!;
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             // 🔹 Conexão com banco SQL Server LocalDB
-            optionsBuilder.UseSqlServer(
-                "Server=(localdb)\\mssqllocaldb;Database=DBMyAplicacaoFinanceiraEFRelac;Trusted_Connection=True;");
+            //optionsBuilder.UseSqlServer(
+            //    "Server=(localdb)\\mssqllocaldb;Database=DBMyAplicacaoFinanceiraEFRelac;Trusted_Connection=True;");
+            var basePath = AppContext.BaseDirectory; // Pasta do EXE
+            var dbPath = Path.Combine(basePath, "MeuBanco.db");
+
+            options.UseSqlite($"Data Source={dbPath}");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            
+
             // 🔹 RELAÇÕES ENTRE ENTIDADES
-            
+
 
             // Cliente → Conta (1:N)
             modelBuilder.Entity<Cliente>()
@@ -45,33 +51,38 @@ namespace Projeto_UVV_Fintech.Banco_Dados.Entities
                 .HasForeignKey(t => t.ContaId)
                 .IsRequired();
 
-            
+
             // 🔹 HERANÇA (TPH - Table per Hierarchy)
-            
+
 
             modelBuilder.Entity<Conta>()
                 .HasDiscriminator<string>("TipoConta")
                 .HasValue<ContaCorrente>("Corrente")
                 .HasValue<ContaPoupanca>("Poupanca");
 
-           
+
             // 🔹 VALORES PADRÃO (Data e Hora)
-            
+
 
             // Data de criação da conta (apenas data)
             modelBuilder.Entity<Conta>()
                 .Property(p => p.DataCriacao)
-                .HasDefaultValueSql("CAST(GETDATE() AS date)");
+                .HasDefaultValueSql("date('now')");
 
             // Data e hora da transação (timestamp completo)
             modelBuilder.Entity<Transacao>()
                 .Property(p => p.DataHoraTransacao)
-                .HasDefaultValueSql("GETDATE()");
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-            
+            modelBuilder.Entity<Transacao>()
+                .Property(t => t.Tipo)
+                .HasConversion<int>();
+
+
+
             // 🔹 TABELAS E NOMES (opcional, mas recomendado)
-            
-            
+
+
             modelBuilder.Entity<Cliente>().ToTable("Clientes");
             modelBuilder.Entity<Conta>().ToTable("Contas");
             modelBuilder.Entity<ContaCorrente>().ToTable("Contas");  // mesma tabela (TPH)
