@@ -21,14 +21,14 @@ namespace Projeto_UVV_Fintech.Controller
         }
 
         //Comentários para evitar erros de compilação pela falta dos métodos em model/Conta.cs
-        //public Conta CriarConta(int clienteID, string tipoConta)
+        //public bool CriarConta(int clienteID, string tipoConta)
         //{
         //    if (Conta.AdicionarConta(clienteID, tipoConta))
         //    {
         //        MessageBox.Show($"Conta criada com sucesso:\nId Cliente: {clienteID}\nTipo Conta: {tipoConta}");
+        //        return true;
         //    }
-
-        //    return novaConta;
+        //    return false;
         //}
 
         //public List<Conta> ListarContas()
