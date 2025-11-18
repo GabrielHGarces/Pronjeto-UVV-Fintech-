@@ -18,7 +18,7 @@ namespace Projeto_UVV_Fintech.Banco_Dados.Entities
 
         public override string ToString()
         {
-            return base.ToString() + $", Tipo: Corrente,Taxa de Manutenção: {TAXA_MANUTENCAO}";
+            return base.ToString() + $", Tipo: Corrente ,Taxa de Manutenção: {TAXA_MANUTENCAO}";
         }
     }
 }

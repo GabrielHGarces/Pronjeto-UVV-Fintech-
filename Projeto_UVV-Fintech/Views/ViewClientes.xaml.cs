@@ -1,4 +1,4 @@
-﻿using Projeto_UVV_Fintech.Model;
+﻿using Projeto_UVV_Fintech.Model.Repository;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -224,7 +224,7 @@ namespace Projeto_UVV_Fintech.Views
             //    .ToList();
 
             //TabelaClientes.ItemsSource = filtrado;
-            ModelCliente modelCliente = new ModelCliente();
+            ClienteRepository modelCliente = new ClienteRepository();
             modelCliente.InserirCliente("Gostosin guanabara", DateTime.Now, "123", "456");
             modelCliente.todosClientes();
         }

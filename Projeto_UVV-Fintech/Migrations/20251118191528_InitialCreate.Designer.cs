@@ -11,7 +11,7 @@ using Projeto_UVV_Fintech.Banco_Dados.Entities;
 namespace Projeto_UVV_Fintech.Migrations
 {
     [DbContext(typeof(DB_Context))]
-    [Migration("20251118125419_InitialCreate")]
+    [Migration("20251118191528_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
