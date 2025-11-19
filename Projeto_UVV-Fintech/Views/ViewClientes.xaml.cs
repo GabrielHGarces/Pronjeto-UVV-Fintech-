@@ -139,7 +139,6 @@ namespace Projeto_UVV_Fintech.Views
         private void NovoClienteButton_Click(object sender, RoutedEventArgs e)
         {
             clienteController.CriarCliente();
-
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

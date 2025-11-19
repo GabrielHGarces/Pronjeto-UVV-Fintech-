@@ -35,6 +35,15 @@ namespace Projeto_UVV_Fintech.Repository
             //}
         }
 
+        public static List<Conta> FiltrarContas(int? IdCliente, int? numerConta, int? numeroAgencia, string? tipoConta, string? nomeTitular, double? saldo, DateTime? dataCriacao, bool? saldoMaior, bool? dataMaior)
+        {
+            List<Conta> contasFiltradas = [];
+            contasFiltradas.Add(new ContaPoupanca());
+
+            return contasFiltradas;
+
+        }
+
 
         public void AtualizarContaPoupanca(int contaId, double novoSaldo)
         {

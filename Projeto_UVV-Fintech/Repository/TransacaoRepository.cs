@@ -39,7 +39,7 @@ namespace Projeto_UVV_Fintech.Repository
             //}
         }
 
-        public List<Transacao> FiltrarTransacoes(int? idTransacao, int? contaRemetente, int? contaDestinatario, string? tipo, double? valor, DateTime? dataTransacao, bool? valorMaior, bool? dataMaior)
+        public static List<Transacao> FiltrarTransacoes(int? idTransacao, int? contaRemetente, int? contaDestinatario, string? tipo, double? valor, DateTime? dataTransacao, bool? valorMaior, bool? dataMaior)
         {
             return new List<Transacao>(); // adicionar a implementação depois
         }

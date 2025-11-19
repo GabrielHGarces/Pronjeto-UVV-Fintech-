@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Projeto_UVV_Fintech.Banco_Dados.Entities
 {
-    internal class ContaPoupanca : Conta
+    public class ContaPoupanca : Conta
     {
         public const double TAXA_RENDIMENTO = 0.03; // 3% ao mês
         public const double TAXA_SAQUE = 0.01;      // 1% após 2 saques
