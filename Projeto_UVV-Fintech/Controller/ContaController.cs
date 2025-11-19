@@ -25,41 +25,124 @@ namespace Projeto_UVV_Fintech.Controller
         //Comentários para evitar erros de compilação pela falta dos métodos em model/Conta.cs
         public bool CriarConta()
         {
-            _view.Opacity = 0.5;
-            var dialog = new ContaDialog { Owner = _view };
-            bool? resultado = dialog.ShowDialog();
-            _view.Opacity = 1;
-
-            if (resultado == true)
+            try
             {
-                int IdCliente = dialog.IdCliente;
-                string tipoConta = dialog.tipoConta;
+                _view.Opacity = 0.5;
+                var dialog = new ContaDialog(this) { Owner = _view };
+                bool? resultado = dialog.ShowDialog();
+                _view.Opacity = 1;
 
-                //if(Cont.CriarConta(IdCliente, tipoConta))
-                //{
-                //    MessageBox.Show($"Conta criada com sucesso:\nId Cliente: {IdCliente}\nTipo Conta: {tipoConta}");
-                //    return true;
-                //}
+                if (resultado == true)
+                {
+                    ListarContas();
+                    return true;
+                }
+                return false;
+            } catch (Exception ex)
+            {
+                MessageBox.Show("Erro ao criar conta: " + ex.Message);
+                return false;
             }
-            return false;
+        }
+
+        public bool SalvarConta(string idCliente, string tipoConta, string nomeCliente)
+        {
+            if (string.IsNullOrWhiteSpace(idCliente))
+            {
+                MessageBox.Show("O campo ID não pode estar vazio.");
+                return false;
+            }
+            else if (string.IsNullOrWhiteSpace(tipoConta))
+            {
+                MessageBox.Show("O campo Tipo de Conta não pode estar vazio.");
+                return false;
+            }
+            else if (string.IsNullOrWhiteSpace(nomeCliente))
+            {
+                MessageBox.Show("Adicione o id correto do Cliente.");
+                return false;
+            }
+
+            int idClienteInt = int.Parse(idCliente);
+
+            try
+            {
+                if (tipoConta == "CC")
+                {
+                    if (ContaCorrenteRepository.CriarConta(idClienteInt))
+                    {
+                        MessageBox.Show($"Conta criada com sucesso:\nId Cliente: {idClienteInt}\nTipo Conta: {tipoConta}");
+                        return true;
+                    }
+                    return false;
+                }
+                else if (tipoConta == "CP")
+                {
+                    if (ContaPoupancaRepository.CriarConta(idClienteInt))
+                    {
+                        MessageBox.Show($"Conta criada com sucesso:\nId Cliente: {idClienteInt}\nTipo Conta: {tipoConta}");
+                        return true;
+                    }
+                    return false;
+                }
+                return false;
+            } catch (Exception ex)
+            {
+                MessageBox.Show("ID do Cliente inválido. Por favor, insira um número válido." + ex.Message);
+                return false;
+            }
         }
 
         public List<Conta> ListarContas()
         {
- 
-            List<Conta> resultado = ContaPoupancaRepository.ListarContas();
-            List<Conta> resultado2 = ContaCorrenteRepository.ListarContas();
-            _view.TabelaContas.ItemsSource = resultado.Concat(resultado2).ToList();
-            return resultado;
+            try
+            {
+                List<Conta> resultadoPoupanca = ContaPoupancaRepository.ListarContas();
+                List<Conta> resultadoCorrente = ContaCorrenteRepository.ListarContas();
+                _view.TabelaContas.ItemsSource = resultadoPoupanca.Concat(resultadoCorrente).ToList();
+                return resultadoPoupanca.Concat(resultadoCorrente).ToList();
+            } catch (Exception ex)
+            {
+                MessageBox.Show("Erro ao listar contas: " + ex.Message);
+                return [];
+            }
         }
 
-        public void FiltrarContas(string? IdCliente, int? numerConta, int? numeroAgencia, string? tipoConta, string? nomeTitular, double? saldo, DateTime? dataCriacao, bool? saldoMaior, bool? dataMaior)
+        public List<Conta> FiltrarContas(string? IdCliente, int? numerConta, int? numeroAgencia, string? tipoConta, string? nomeTitular, double? saldo, DateTime? dataCriacao, bool? saldoMaior, bool? dataMaior)
         {
-            List<Conta> resultado = ContaPoupancaRepository.FiltrarContas(
-                int.Parse(IdCliente), numerConta, numeroAgencia, tipoConta,
-                nomeTitular, saldo, dataCriacao, saldoMaior, dataMaior);
+            try
+            {
+                List<Conta> resultado;
+                if (tipoConta == "CP")
+                {
+                    resultado = ContaPoupancaRepository.FiltrarContas(
+                    int.Parse(IdCliente), numerConta, numeroAgencia, tipoConta,
+                    nomeTitular, saldo, dataCriacao, saldoMaior, dataMaior);
+                } else if (tipoConta == "CC")
+                {
+                    resultado = ContaCorrenteRepository.FiltrarContas(
+                    int.Parse(IdCliente), numerConta, numeroAgencia, tipoConta,
+                    nomeTitular, saldo, dataCriacao, saldoMaior, dataMaior);
+                } else
+                {
+                    List<Conta> resultadoPoupanca = ContaPoupancaRepository.FiltrarContas(
+                    int.Parse(IdCliente), numerConta, numeroAgencia, tipoConta,
+                    nomeTitular, saldo, dataCriacao, saldoMaior, dataMaior);
+                    List<Conta> resultadoCorrente = ContaCorrenteRepository.FiltrarContas(
+                    int.Parse(IdCliente), numerConta, numeroAgencia, tipoConta,
+                    nomeTitular, saldo, dataCriacao, saldoMaior, dataMaior);
+                    resultado = resultadoPoupanca.Concat(resultadoCorrente).ToList();
+                }
 
-            _view.TabelaContas.ItemsSource = resultado;
+
+                _view.TabelaContas.ItemsSource = resultado;
+                return resultado;
+            } catch (Exception ex)
+            {
+                MessageBox.Show("Erro ao filtrar contas: " + ex.Message);
+                return [];
+            }
+            
         }
 
         //public void sacar(Conta conta, double valor)

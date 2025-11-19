@@ -2,10 +2,8 @@
 using Projeto_UVV_Fintech.Controller;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Globalization;
 using System.Linq;
-using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -16,7 +14,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using static Projeto_UVV_Fintech.Views.ViewClientes;
 
 namespace Projeto_UVV_Fintech.Views
 {
@@ -38,18 +35,16 @@ namespace Projeto_UVV_Fintech.Views
         {
             InitializeComponent();
             contaController = new ContaController(this);
-
             TabelaContas.ItemsSource = contaController.ListarContas();
         }
 
-        public ViewContas(Conta conta)
+        public ViewContas(int nConta)
         {
             InitializeComponent();
             contaController = new ContaController(this);
 
-            NConta.Text = conta.Id.ToString();
-            numeroConta = conta.Id;
-
+            NConta.Text = nConta.ToString();
+            numeroConta = nConta;
 
             TabelaContas.ItemsSource = contaController.ListarContas();
             PerformSearch();
@@ -179,71 +174,6 @@ namespace Projeto_UVV_Fintech.Views
 
         private void PerformSearch()
         {
-            //if (contaController == null)
-            //{
-            //    TabelaContas.ItemsSource = null;
-            //    return;
-            //}
-
-            //var query = contas.AsEnumerable();
-
-            //// Filtrar por ID do cliente (se informado)
-            //if (!string.IsNullOrWhiteSpace(ClienteID.Text))
-            //{
-            //    string buscaID = ClienteID.Text;
-            //    query = query.Where(p => p.IdCliente.ToString().Contains(buscaID));
-            //}
-
-            //// Filtrar por número da conta (se informado)
-            //if (numeroConta.HasValue)
-            //{
-            //    string buscaConta = numeroConta.Value.ToString();
-            //    query = query.Where(p => p.NumConta.ToString().Contains(buscaConta));
-            //}
-
-            //// Filtrar por número da agência (se informado)
-            //if (numeroAgencia.HasValue)
-            //{
-            //    string buscaAgencia = numeroAgencia.Value.ToString();
-            //    query = query.Where(p => p.Agencia.ToString().Contains(buscaAgencia));
-            //}
-
-            //// Filtrar por tipo de conta (se não for "Todos" e não for nulo/vazio)
-            //if (!string.IsNullOrWhiteSpace(tipoConta) && !string.Equals(tipoConta, "Todos", StringComparison.OrdinalIgnoreCase))
-            //{
-            //    query = query.Where(p => !string.IsNullOrWhiteSpace(p.Tipo) &&
-            //                         p.Tipo.IndexOf(tipoConta, StringComparison.OrdinalIgnoreCase) >= 0);
-            //}
-
-            //// Filtrar por nome do titular (se informado)
-            //if (!string.IsNullOrWhiteSpace(nomeTitular))
-            //{
-            //    query = query.Where(p => !string.IsNullOrWhiteSpace(p.Nome) &&
-            //                         p.Nome.IndexOf(nomeTitular, StringComparison.OrdinalIgnoreCase) >= 0);
-            //}
-
-            //// Filtrar por saldo (se diferente de 0)
-            //if (saldo != 0)
-            //{
-            //    if (saldoMaiorQue)
-            //        query = query.Where(p => p.Saldo >= saldo);
-            //    else
-            //        query = query.Where(p => p.Saldo <= saldo);
-            //}
-
-            //// Filtrar por data (se selecionada) comparando apenas a parte da data
-            //if (dataSelecionada.HasValue)
-            //{
-            //    DateTime ds = dataSelecionada.Value.Date;
-            //    if (dataMaiorQue)
-            //        query = query.Where(p => p.DataDeAdesao.Date >= ds);
-            //    else
-            //        query = query.Where(p => p.DataDeAdesao.Date <= ds);
-            //}
-
-            //TabelaContas.ItemsSource = query.ToList();
-
-
             contaController.FiltrarContas(
                 ClienteID.Text, numeroConta, numeroAgencia, tipoConta,
                 nomeTitular, saldo != 0 ? saldo : (double?)null,
@@ -283,7 +213,6 @@ namespace Projeto_UVV_Fintech.Views
             ComboBoxItem selectedItem = (ComboBoxItem)TipoOpcoes.SelectedItem;
             if (selectedItem != null)
             {
-                // Salva o conteúdo (texto) na variável privada
                 tipoConta = selectedItem.Content.ToString();
             }
         }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Projeto_UVV_Fintech.Banco_Dados.Entities;
+using Projeto_UVV_Fintech.Controller;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,12 +20,13 @@ namespace Projeto_UVV_Fintech.Views
 {
     public partial class ContaDialog : Window
     {
-        public int IdCliente { get; private set; }
+        private readonly ContaController _controller;
         public string tipoConta = "";
 
-        public ContaDialog()
+        public ContaDialog(ContaController controller)
         {
             InitializeComponent();
+            _controller = controller;
         }
 
         private void SomenteNumeros(object sender, System.Windows.Input.TextCompositionEventArgs e)
@@ -54,26 +57,11 @@ namespace Projeto_UVV_Fintech.Views
 
         private void Criar_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(ClienteID.Text))
+            if (_controller.SalvarConta(ClienteID.Text, tipoConta, NomeCliente.Text))
             {
-                MessageBox.Show("O campo ID não pode estar vazio.");
-                return;
+                DialogResult = true;
+                Close();
             }
-            else if (string.IsNullOrWhiteSpace(tipoConta))
-            {
-                MessageBox.Show("O campo Tipo de Conta não pode estar vazio.");
-                return;
-            }
-            else if (string.IsNullOrWhiteSpace(NomeCliente.Text))
-            {
-                MessageBox.Show("Adicione o id correto do Cliente.");
-                return;
-            }
-
-            IdCliente = int.Parse(ClienteID.Text);
-
-            DialogResult = true;
-            Close();
         }
 
         private void Pesquisar_Click(object sender, RoutedEventArgs e)
@@ -88,8 +76,13 @@ namespace Projeto_UVV_Fintech.Views
 
         private void ClienteID_TextChanged(object sender, TextChangedEventArgs e)
         {
-            IdCliente = ClienteID.Text != "" ? int.Parse(ClienteID.Text) : 0;
-            NomeCliente.Text = "Gatinho " + IdCliente;
+            int idCliente = ClienteID.Text != "" ? int.Parse(ClienteID.Text) : 0;
+
+            var conta = _controller.FiltrarContas(IdCliente: ClienteID.Text, null, null, null, null, null, null, null, null).FirstOrDefault();
+            string nomeCliente = conta != null ? conta.Cliente.Nome : string.Empty;
+
+            NomeCliente.Text = nomeCliente;
         }
     }
 }
+

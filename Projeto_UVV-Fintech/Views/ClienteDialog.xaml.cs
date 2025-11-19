@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Projeto_UVV_Fintech.Controller;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,13 +22,12 @@ namespace Projeto_UVV_Fintech.Views
     /// </summary>
     public partial class ClienteDialog : Window
     {
-        public string NomeCliente { get; private set; }
-        public string TelefoneCliente { get; private set; }
-        public string CepCliente { get; private set; }
+        private readonly ClienteController _controller;
 
-        public ClienteDialog()
+        public ClienteDialog(ClienteController controller)
         {
             InitializeComponent();
+            _controller = controller;
             DialogResult = false;
         }
 
@@ -43,28 +43,11 @@ namespace Projeto_UVV_Fintech.Views
 
         private void Salvar_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(NomeInput.Text))
+            if (_controller.SalvarCliente(NomeInput.Text, TelefoneInput.Text, CepInput.Text))
             {
-                MessageBox.Show("O campo Nome não pode estar vazio.");
-                return;
+                DialogResult = true;
+                Close();
             }
-            else if (string.IsNullOrWhiteSpace(TelefoneInput.Text))
-            {
-                MessageBox.Show("O campo Telefone não pode estar vazio.");
-                return;
-            }
-            else if (string.IsNullOrWhiteSpace(CepInput.Text))
-            {
-                MessageBox.Show("O campo CEP não pode estar vazio.");
-                return;
-            }
-
-            NomeCliente = NomeInput.Text;
-            TelefoneCliente = TelefoneInput.Text;
-            CepCliente = CepInput.Text;
-
-            DialogResult = true;
-            Close();
         }
 
         private void Cancelar_Click(object sender, RoutedEventArgs e)

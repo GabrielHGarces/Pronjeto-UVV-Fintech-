@@ -9,12 +9,12 @@ namespace Projeto_UVV_Fintech.Repository
 {
     internal class ContaPoupancaRepository
     {
-        public bool CriarConta(double saldo, int clienteId)
+        public static bool CriarConta(int clienteId)
         {
             using var context = new DB_Context();
             Conta novo = new ContaPoupanca();
             var clienteAssociado = context.Clientes.Find(clienteId);
-            novo.Saldo = saldo;
+            novo.Saldo = 0;
             novo.ClienteId = clienteId;
             novo.Cliente = clienteAssociado;
             clienteAssociado.Contas.Add(novo);
