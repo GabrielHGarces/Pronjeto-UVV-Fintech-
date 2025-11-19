@@ -35,6 +35,8 @@ namespace Projeto_UVV_Fintech.Banco_Dados.Entities
 
         public Cliente Cliente { get; set; } = null!;
 
+        public int Agencia { get; set; }
+        public int NumeroConta { get; set; }
         // 🔹 Relação — Uma conta tem várias transações
         public ICollection<Transacao> Transacoes { get; set; } = [];
 

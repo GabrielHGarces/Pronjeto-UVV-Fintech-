@@ -28,20 +28,126 @@ namespace Projeto_UVV_Fintech.Repository
         {
             using var context = new DB_Context();
             return context.Contas.ToList();
-            //foreach (var conta in contas)
-            //{
-            //    MessageBox.Show($"ID: {conta.Id}, Tipo de Conta: Poupança,  Saldo: {conta.Saldo}, ClienteId: {conta.ClienteId}");
-
-            //}
+            
         }
 
-        public static List<Conta> FiltrarContas(int? IdCliente, int? numerConta, int? numeroAgencia, string? tipoConta, string? nomeTitular, double? saldo, DateTime? dataCriacao, bool? saldoMaior, bool? dataMaior)
+        public static bool Depositar(Conta conta, double valor)
         {
-            List<Conta> contasFiltradas = [];
-            contasFiltradas.Add(new ContaPoupanca());
+            if (conta == null)
+            {
+                return false;
+            }
 
-            return contasFiltradas;
 
+
+            conta.Saldo += valor;
+            using var context = new DB_Context();
+            context.Contas.Update(conta);
+
+            context.SaveChanges();
+            TransacaoRepository.CriarTransacao(TipoTransacao.Deposito, valor, conta.Id, conta.Id, conta.Id);
+            return true;
+
+
+
+
+        }
+
+        public static bool  Sacar(Conta conta, double valor)
+        {
+            if (conta == null || conta.Saldo < valor)
+            {
+                return false;
+            }
+
+
+
+            conta.Saldo -= valor;
+            using var context = new DB_Context();
+            context.Contas.Update(conta);
+            context.SaveChanges();
+            TransacaoRepository.CriarTransacao(TipoTransacao.Deposito, valor, conta.Id, conta.Id, conta.Id);
+            return true;
+
+        }
+
+        public static bool Transferir(Conta contaOrigem, Conta contaDestino, double valor)
+        {
+            if (contaOrigem == null || contaDestino == null)
+                return false;
+
+
+
+
+            if (contaOrigem.Saldo < valor)
+            {
+
+                return false;
+            }
+            else
+            {
+                using var context = new DB_Context();
+
+                contaOrigem.Saldo -= valor;
+                contaDestino.Saldo += valor;
+
+                context.Contas.Update(contaOrigem);
+                context.Contas.Update(contaDestino);
+
+
+                context.SaveChanges();
+                TransacaoRepository.CriarTransacao(TipoTransacao.Deposito, valor, contaOrigem.Id, contaDestino.Id, contaOrigem.Id);
+                return true;
+            }
+
+
+        }
+
+
+        public static List<Conta> FiltrarContas(int? idCliente, int? numeroConta, int? numeroAgencia, string? tipoConta, string? nomeTitular, double? saldo, DateTime? dataCriacao, bool? saldoMaior, bool? dataMaior)
+        {
+            // Busca todas as contas do BD
+            var contas = ListarContas();
+
+            var filtrado = contas
+                .Where(c =>
+                    // ID do Cliente
+                    (idCliente == null || c.ClienteId == idCliente)
+
+                    // Número da conta
+                    && (numeroConta == null || c.NumeroConta == numeroConta)
+
+                    // Número da agência
+                    && (numeroAgencia == null || c.Agencia == numeroAgencia)
+
+                    && (nomeTitular == null ||
+                        (!string.IsNullOrWhiteSpace(c.Cliente.Nome) && c.Cliente.Nome.Contains(nomeTitular, StringComparison.OrdinalIgnoreCase))
+                    )
+
+
+                    // Saldo
+                    && (
+                        saldo == null ||
+                        (
+                            saldoMaior == true ? c.Saldo >= saldo :
+                            saldoMaior == false ? c.Saldo <= saldo :
+                            true
+                        )
+                    )
+
+                    // Data de criação
+                    && (
+                        dataCriacao == null ||
+                        (
+                            dataMaior == true ? c.DataCriacao >= dataCriacao :
+                            dataMaior == false ? c.DataCriacao <= dataCriacao :
+                            true
+                        )
+                    )
+                )
+                .ToList();
+
+            return filtrado;
         }
 
 
