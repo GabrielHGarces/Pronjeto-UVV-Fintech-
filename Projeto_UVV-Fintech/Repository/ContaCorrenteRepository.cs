@@ -19,6 +19,11 @@ namespace Projeto_UVV_Fintech.Repository
             novo.Saldo = 0; // Saldo inicial zero pois está sendo criada zerada
             novo.ClienteId = clienteId;
             novo.Cliente = clienteAssociado;
+            Random rand = new Random();
+            novo.Agencia = rand.Next(10000, 99999); // Gera um número de agência aleatório entre 10000 e 99999
+            novo.NumeroConta = rand.Next(100000, 999999); // Gera um número de conta aleatório entre 100000 e 999999
+
+
             clienteAssociado.Contas.Add(novo);
 
             context.Contas.Add(novo);
@@ -39,10 +44,52 @@ namespace Projeto_UVV_Fintech.Repository
             //}
         }
 
-        public static List<Conta> FiltrarContas(int? IdCliente, int? numerConta, int? numeroAgencia, string? tipoConta, string? nomeTitular, double? saldo, DateTime? dataCriacao, bool? saldoMaior, bool? dataMaior)
+        public static List<Conta> FiltrarContas(int? idCliente,int? numeroConta,int? numeroAgencia,string? tipoConta,string? nomeTitular,double? saldo,DateTime? dataCriacao,bool? saldoMaior,bool? dataMaior)
         {
-            return new List<Conta>(); // adicionar a implementação depois
+            // Busca todas as contas do BD
+            var contas = ListarContas();
+
+            var filtrado = contas
+                .Where(c =>
+                    // ID do Cliente
+                    (idCliente == null || c.ClienteId == idCliente)
+
+                    // Número da conta
+                    && (numeroConta == null || c.NumeroConta == numeroConta)
+
+                    // Número da agência
+                    && (numeroAgencia == null || c.Agencia == numeroAgencia)
+
+                    && (nomeTitular == null ||
+                        (!string.IsNullOrWhiteSpace(c.Cliente.Nome) && c.Cliente.Nome.Contains(nomeTitular, StringComparison.OrdinalIgnoreCase))
+                    )
+
+
+                    // Saldo
+                    && (
+                        saldo == null ||
+                        (
+                            saldoMaior == true ? c.Saldo >= saldo :
+                            saldoMaior == false ? c.Saldo <= saldo :
+                            true
+                        )
+                    )
+
+                    // Data de criação
+                    && (
+                        dataCriacao == null ||
+                        (
+                            dataMaior == true ? c.DataCriacao >= dataCriacao :
+                            dataMaior == false ? c.DataCriacao <= dataCriacao :
+                            true
+                        )
+                    )
+                )
+                .ToList();
+
+            return filtrado;
         }
+
 
         public void AtualizarContaCorrente(int contaId, double novoSaldo)
         {

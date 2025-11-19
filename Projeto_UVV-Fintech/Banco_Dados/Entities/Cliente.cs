@@ -19,7 +19,7 @@ namespace Projeto_UVV_Fintech.Banco_Dados.Entities
         [Required(ErrorMessage = "A data de nascimento é obrigatória")]
         [DataType(DataType.Date)] // Informa ao ASP.NET que este campo é uma data
         [Display(Name = "Data de Nascimento")] // Nome que aparece nos formulários
-        public DateTime DataNascimento { get; set; } 
+        public DateTime DataAdesao { get; set; } 
 
         [Required]
         [MaxLength(8)]//Tamanho Maximo

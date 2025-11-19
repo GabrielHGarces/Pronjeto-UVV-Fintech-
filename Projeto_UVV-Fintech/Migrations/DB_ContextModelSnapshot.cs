@@ -28,7 +28,7 @@ namespace Projeto_UVV_Fintech.Migrations
                         .HasMaxLength(8)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("DataNascimento")
+                    b.Property<DateTime>("DataAdesao")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Nome")
@@ -52,6 +52,9 @@ namespace Projeto_UVV_Fintech.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("Agencia")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("ClienteId")
                         .HasColumnType("INTEGER");
 
@@ -59,6 +62,9 @@ namespace Projeto_UVV_Fintech.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT")
                         .HasDefaultValueSql("date('now')");
+
+                    b.Property<int>("NumeroConta")
+                        .HasColumnType("INTEGER");
 
                     b.Property<double>("Saldo")
                         .HasColumnType("REAL");

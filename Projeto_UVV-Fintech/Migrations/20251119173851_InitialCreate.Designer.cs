@@ -11,7 +11,7 @@ using Projeto_UVV_Fintech.Banco_Dados.Entities;
 namespace Projeto_UVV_Fintech.Migrations
 {
     [DbContext(typeof(DB_Context))]
-    [Migration("20251118191528_InitialCreate")]
+    [Migration("20251119173851_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -31,7 +31,7 @@ namespace Projeto_UVV_Fintech.Migrations
                         .HasMaxLength(8)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("DataNascimento")
+                    b.Property<DateTime>("DataAdesao")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Nome")
@@ -55,6 +55,9 @@ namespace Projeto_UVV_Fintech.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("Agencia")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("ClienteId")
                         .HasColumnType("INTEGER");
 
@@ -62,6 +65,9 @@ namespace Projeto_UVV_Fintech.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT")
                         .HasDefaultValueSql("date('now')");
+
+                    b.Property<int>("NumeroConta")
+                        .HasColumnType("INTEGER");
 
                     b.Property<double>("Saldo")
                         .HasColumnType("REAL");

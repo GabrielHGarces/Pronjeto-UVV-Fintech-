@@ -10,14 +10,14 @@ namespace Projeto_UVV_Fintech.Repository
     internal class ClienteRepository
     {
         //Vou transformar em bool depois
-        public static bool CriarCliente(string name, DateTime dataNascimento, string cEP, string telefone)
+        public static bool CriarCliente(string name, DateTime dataAdesao, string cEP, string telefone)
         {
 
             using var context = new DB_Context();
             Cliente CliNovo = new Cliente();
             CliNovo.Nome = name;
             CliNovo.Telefone = telefone;
-            CliNovo.DataNascimento = dataNascimento;
+            CliNovo.DataAdesao = dataAdesao;
             CliNovo.CEP = cEP;
 
             context.Clientes.Add(CliNovo);
@@ -30,17 +30,48 @@ namespace Projeto_UVV_Fintech.Repository
         {
             using var context = new DB_Context();
             return context.Clientes.ToList();
-            //foreach (var cliente in clientes)
-            //{
-            //    MessageBox.Show($"ID: {cliente.Id}, Nome: {cliente.Nome}, Telefone: {cliente.Telefone}, Data de Nascimento: {cliente.DataNascimento}, CEP: {cliente.CEP}");
-
-            //}
+            
         }
 
-        public static List<Cliente> FiltrarClientes(int? idCliente, string? telefone, string? cep, string? nomeCliente, int? numeroDeContas, DateTime? dataAdesao, bool? dataMaiorQue)
+        public static List<Cliente> FiltrarClientes(int? idCliente,string? telefone,string? cep, string? nomeCliente,int? numeroDeContas, DateTime? dataAdesao,bool? dataMaiorQue)
         {
-            return new List<Cliente>(); // adicionar a implementação depois
+            List<Cliente> clientes = ListarClientes();
+            var filtrado = clientes
+                .Where(c =>
+                    // Filtra por ID
+                    (idCliente == null || c.Id == idCliente)
+
+                    // Filtra por telefone 
+                    && (string.IsNullOrWhiteSpace(telefone) ||
+                        (!string.IsNullOrWhiteSpace(c.Telefone) && c.Telefone.Contains(telefone)))
+
+                    // Filtra por CEP
+                    && (string.IsNullOrWhiteSpace(cep) ||
+                        (!string.IsNullOrWhiteSpace(c.CEP) && c.CEP.Contains(cep)))
+
+                    // Filtra por nome
+                    && (string.IsNullOrWhiteSpace(nomeCliente) ||
+                        (!string.IsNullOrWhiteSpace(c.Nome) && c.Nome.Contains(nomeCliente, StringComparison.OrdinalIgnoreCase)))
+
+                    // Filtra por número de contas
+                    && (numeroDeContas == null ||
+                        c.Contas?.Count == numeroDeContas)
+
+                    // Filtra por data de adesão (opcional)
+                    && (
+                        dataAdesao == null ||  // Se não selecionar data, ignora
+                        (
+                            dataMaiorQue == true ? c.DataAdesao >= dataAdesao :
+                            dataMaiorQue == false ? c.DataAdesao <= dataAdesao :
+                            true // Se dataMaiorQue for null, ignora a regra
+                        )
+                    )
+                )
+                .ToList();
+
+            return filtrado;
         }
+
 
 
         public void DeletarCliente(int clienteId)
@@ -58,14 +89,14 @@ namespace Projeto_UVV_Fintech.Repository
             }
         }
 
-        public void AtualizarCliente(int clienteId, string novoNome, DateTime novaDataNascimento, string novoCEP, string novoTelefone)
+        public void AtualizarCliente(int clienteId, string novoNome, DateTime dataAdesao, string novoCEP, string novoTelefone)
         {
             using var context = new DB_Context();
             var cliente = context.Clientes.Find(clienteId);
             if (cliente != null)
             {
                 cliente.Nome = novoNome;
-                cliente.DataNascimento = novaDataNascimento;
+                cliente.DataAdesao = dataAdesao;
                 cliente.CEP = novoCEP;
                 cliente.Telefone = novoTelefone;
                 context.SaveChanges();
@@ -161,11 +192,11 @@ namespace Projeto_UVV_Fintech.Repository
             }
         }
 
-        public void BuscarPorDataNascimento(DateTime dataNascimento)
+        public void BuscarPorDataAdesao(DateTime dataAdesao)
         {
             using var context = new DB_Context();
             var clientes = context.Clientes
-                .Where(c => c.DataNascimento == dataNascimento)
+                .Where(c => c.DataAdesao == dataAdesao)
                 .ToList();
             if (clientes.Any())
             {

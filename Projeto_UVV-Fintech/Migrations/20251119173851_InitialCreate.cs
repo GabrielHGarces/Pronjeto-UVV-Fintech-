@@ -18,7 +18,7 @@ namespace Projeto_UVV_Fintech.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Nome = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
-                    DataNascimento = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    DataAdesao = table.Column<DateTime>(type: "TEXT", nullable: false),
                     CEP = table.Column<string>(type: "TEXT", maxLength: 8, nullable: false),
                     Telefone = table.Column<string>(type: "TEXT", maxLength: 9, nullable: false)
                 },
@@ -36,6 +36,8 @@ namespace Projeto_UVV_Fintech.Migrations
                     Saldo = table.Column<double>(type: "REAL", nullable: false),
                     DataCriacao = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "date('now')"),
                     ClienteId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Agencia = table.Column<int>(type: "INTEGER", nullable: false),
+                    NumeroConta = table.Column<int>(type: "INTEGER", nullable: false),
                     TipoConta = table.Column<string>(type: "TEXT", maxLength: 8, nullable: false),
                     SaquesRealizadosNoMes = table.Column<int>(type: "INTEGER", nullable: true)
                 },

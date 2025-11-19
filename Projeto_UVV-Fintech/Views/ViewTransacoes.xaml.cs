@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Globalization;
 using System.Linq;
-
+using Projeto_UVV_Fintech.Banco_Dados.Entities;
 
 namespace Projeto_UVV_Fintech.Views
 {
@@ -274,10 +274,10 @@ namespace Projeto_UVV_Fintech.Views
             Button button = sender as Button;
             if (button == null) return;
 
-            Transacao contaSelecionada = button.DataContext as Transacao;
-            if (contaSelecionada == null) return;
+            Transacao transacaoSelecionada = button.DataContext as Transacao;
+            if (transacaoSelecionada == null) return;
 
-            int Remetente = contaSelecionada.ContaRemetente;
+            int Remetente =   transacaoSelecionada.ContaRemetente;
 
             this.Hide();
             var window = new ViewContas(Remetente) { Owner = this };

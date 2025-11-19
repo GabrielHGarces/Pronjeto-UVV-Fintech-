@@ -32,17 +32,41 @@ namespace Projeto_UVV_Fintech.Repository
         {
             using var context = new DB_Context();
             return context.Transacoes.ToList();
-            //foreach (var transacao in transacoes)
-            //{
-            //    MessageBox.Show($"ID: {transacao.Id} | Tipo: {transacao.Tipo} | Valor: {transacao.Valor}  ");
-
-            //}
+            
         }
 
         public static List<Transacao> FiltrarTransacoes(int? idTransacao, int? contaRemetente, int? contaDestinatario, string? tipo, double? valor, DateTime? dataTransacao, bool? valorMaior, bool? dataMaior)
         {
-            return new List<Transacao>(); // adicionar a implementação depois
+            var transacoes = ListarTransacoes();
+
+            var filtrado = transacoes
+                .Where(t =>
+                    (idTransacao == null || t.Id == idTransacao) &&
+                    (contaRemetente == null || t.RemetenteId == contaRemetente) &&
+                    (contaDestinatario == null || t.DestinatarioId == contaDestinatario) &&
+                    (string.IsNullOrWhiteSpace(tipo) || t.Tipo.ToString().Contains(tipo, StringComparison.OrdinalIgnoreCase)) &&
+                    (
+                        valor == null ||
+                        (
+                            valorMaior == true ? t.Valor >= valor :
+                            valorMaior == false ? t.Valor <= valor :
+                            true
+                        )
+                    ) &&
+                    (
+                        dataTransacao == null ||
+                        (
+                            dataMaior == true ? t.DataHoraTransacao >= dataTransacao :
+                            dataMaior == false ? t.DataHoraTransacao <= dataTransacao :
+                            true
+                        )
+                    )
+                )
+                .ToList();
+
+            return filtrado;
         }
+
 
 
         public void DeletarTransacao(int transacaoId)

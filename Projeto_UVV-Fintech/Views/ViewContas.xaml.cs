@@ -42,13 +42,13 @@ namespace Projeto_UVV_Fintech.Views
             TabelaContas.ItemsSource = contaController.ListarContas();
         }
 
-        public ViewContas(Conta conta)
+        public ViewContas(int nConta)
         {
             InitializeComponent();
             contaController = new ContaController(this);
 
-            NConta.Text = conta.Id.ToString();
-            numeroConta = conta.Id;
+            NConta.Text = nConta.ToString();
+            numeroConta = nConta;
 
 
             TabelaContas.ItemsSource = contaController.ListarContas();
