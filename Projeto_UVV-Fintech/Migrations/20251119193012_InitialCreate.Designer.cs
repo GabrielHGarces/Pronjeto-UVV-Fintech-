@@ -11,7 +11,7 @@ using Projeto_UVV_Fintech.Banco_Dados.Entities;
 namespace Projeto_UVV_Fintech.Migrations
 {
     [DbContext(typeof(DB_Context))]
-    [Migration("20251119173851_InitialCreate")]
+    [Migration("20251119193012_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -32,7 +32,9 @@ namespace Projeto_UVV_Fintech.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("DataAdesao")
-                        .HasColumnType("TEXT");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("date('now')");
 
                     b.Property<string>("Nome")
                         .IsRequired()

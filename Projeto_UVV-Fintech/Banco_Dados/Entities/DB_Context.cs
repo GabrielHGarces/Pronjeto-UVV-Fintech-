@@ -62,7 +62,9 @@ namespace Projeto_UVV_Fintech.Banco_Dados.Entities
 
 
             // 🔹 VALORES PADRÃO (Data e Hora)
-
+            modelBuilder.Entity<Cliente>()
+                .Property(p => p.DataAdesao)
+                .HasDefaultValueSql("date('now')");
 
             // Data de criação da conta (apenas data)
             modelBuilder.Entity<Conta>()

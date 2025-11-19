@@ -10,14 +10,13 @@ namespace Projeto_UVV_Fintech.Repository
     internal class ClienteRepository
     {
         //Vou transformar em bool depois
-        public static bool CriarCliente(string name, DateTime dataAdesao, string cEP, string telefone)
+        public static bool CriarCliente(string name, string cEP, string telefone)
         {
 
             using var context = new DB_Context();
             Cliente CliNovo = new Cliente();
             CliNovo.Nome = name;
             CliNovo.Telefone = telefone;
-            CliNovo.DataAdesao = dataAdesao;
             CliNovo.CEP = cEP;
 
             context.Clientes.Add(CliNovo);

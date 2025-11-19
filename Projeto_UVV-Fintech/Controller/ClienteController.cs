@@ -63,19 +63,19 @@ namespace Projeto_UVV_Fintech.Controller
                 return false;
             }
 
-            //try
-            //{
-            //    if (ClienteRepository.CriarCliente(nome, telefone, cep))
-            //    {
-            //        MessageBox.Show($"Cliente salvo:\nNome: {nome}\nTelefone: {telefone}\nCEP: {cep}");
-            //        return true;
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    MessageBox.Show($"Erro ao salvar o cliente: {ex.Message}");
-            //    return false;
-            //}
+            try
+            {
+                if (ClienteRepository.CriarCliente(nome, telefone, cep))
+                {
+                    MessageBox.Show($"Cliente salvo:\nNome: {nome}\nTelefone: {telefone}\nCEP: {cep}");
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro ao salvar o cliente: {ex.Message}");
+                return false;
+            }
 
             return true;
         }

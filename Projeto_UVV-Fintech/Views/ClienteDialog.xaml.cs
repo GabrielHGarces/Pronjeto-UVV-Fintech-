@@ -28,7 +28,6 @@ namespace Projeto_UVV_Fintech.Views
         {
             InitializeComponent();
             _controller = controller;
-            DialogResult = false;
         }
 
         private void SomenteNumeros(object sender, System.Windows.Input.TextCompositionEventArgs e)

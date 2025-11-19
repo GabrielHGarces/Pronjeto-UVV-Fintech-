@@ -29,7 +29,9 @@ namespace Projeto_UVV_Fintech.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("DataAdesao")
-                        .HasColumnType("TEXT");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("date('now')");
 
                     b.Property<string>("Nome")
                         .IsRequired()
