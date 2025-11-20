@@ -38,6 +38,9 @@ namespace Projeto_UVV_Fintech.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("QuantidadeContas")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Telefone")
                         .IsRequired()
                         .HasMaxLength(9)

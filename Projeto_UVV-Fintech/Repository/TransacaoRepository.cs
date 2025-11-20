@@ -95,13 +95,12 @@
 ﻿                tipo = "Transferencia";
 ﻿            }
 ﻿
-﻿            var filtrado = transacoes
-﻿                .Where(t =>
-﻿                    (idTransacao == null || t.Id == idTransacao) &&
-﻿                    (contaRemetente == null || t.ContaRemetenteId == contaRemetente) &&
-﻿                    (contaDestinatario == null || t.ContaDestinatarioId == contaDestinatario) &&
-﻿                    (string.IsNullOrWhiteSpace(tipo) || tipo == "Todos" || t.Tipo.ToString().Contains(tipo, StringComparison.OrdinalIgnoreCase)) &&
-﻿                    (
+﻿                        var filtrado = transacoes
+﻿                            .Where(t =>
+﻿                                (idTransacao == null || t.Id == idTransacao) &&
+﻿                                (contaRemetente == null || (t.ContaRemetente != null && t.ContaRemetente.NumeroConta == contaRemetente)) &&
+﻿                                (contaDestinatario == null || (t.ContaDestinatario != null && t.ContaDestinatario.NumeroConta == contaDestinatario)) &&
+﻿                                (string.IsNullOrWhiteSpace(tipo) || tipo == "Todos" || t.Tipo.ToString().Contains(tipo, StringComparison.OrdinalIgnoreCase)) &&﻿                    (
 ﻿                        valor == null ||
 ﻿                        (
 ﻿                            valorMaior == true ? t.Valor >= valor :

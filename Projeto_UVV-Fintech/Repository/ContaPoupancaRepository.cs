@@ -155,14 +155,18 @@ namespace Projeto_UVV_Fintech.Repository
         {
             using var context = new DB_Context();
 
+            // Buscar as contas normalmente (sem AsNoTracking)
             var contaOrigem = context.Contas
                 .OfType<ContaPoupanca>()
                 .FirstOrDefault(c => c.Id == contaOrigemId);
 
             var contaDestino = context.Contas
-                .FirstOrDefault(c => c.Id == contaDestinoId);
+                .FirstOrDefault(c => c.Id == contaDestinoId); // <-- pode ser corrente ou poupança
 
             if (contaOrigem == null || contaDestino == null)
+                return false;
+
+            if (valor <= 0)
                 return false;
 
             if (contaOrigem.Saldo < valor)
@@ -170,18 +174,21 @@ namespace Projeto_UVV_Fintech.Repository
 
             contaOrigem.Saldo -= valor;
             contaDestino.Saldo += valor;
-            
+
+
+            // Atualizar saldos
             context.SaveChanges();
 
+            // Criar lançamento da transação
             TransacaoRepository.CriarTransacao(
                 TipoTransacao.Transferencia,
-                valor, contaOrigem.Id, contaDestino.Id
+                valor,
+                contaOrigem.Id,
+                contaDestino.Id
             );
 
             return true;
         }
-
-
 
 
         public List<Conta> FiltrarContas(int? idCliente, int? numeroConta, int? numeroAgencia, string? tipoConta, string? nomeTitular, double? saldo, DateTime? dataCriacao, bool? saldoMaior, bool? dataMaior)
