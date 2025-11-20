@@ -1,6 +1,7 @@
 ﻿//using Projeto_UVV_Fintech.Model;
 using Projeto_UVV_Fintech.Banco_Dados.Entities;
 using Projeto_UVV_Fintech.Repository;
+using Projeto_UVV_Fintech.ViewModels;
 using Projeto_UVV_Fintech.Views;
 using System;
 using System.Collections.Generic;
@@ -85,7 +86,18 @@ namespace Projeto_UVV_Fintech.Controller
             try
             {
                 List<Cliente> resultado = ClienteRepository.ListarClientes();
-                _view.TabelaClientes.ItemsSource = resultado;
+
+                var clienteViewModel = resultado.Select(cliente => new ClienteViewModel
+                {
+                    ClientID = cliente.Id,
+                    ClientName = cliente.Nome,
+                    Telefone = cliente.Telefone,
+                    Cep = cliente.CEP,
+                    DataAdesao = cliente.DataAdesao,
+                    NumeroContas = cliente.Contas?.Count() ?? 0
+                }).ToList();
+
+                _view.TabelaClientes.ItemsSource = clienteViewModel;
                 return resultado;
             }
             catch (Exception ex)
@@ -103,7 +115,18 @@ namespace Projeto_UVV_Fintech.Controller
                 idCliente, telefone, cep, nomeCliente,
                 numeroDeContas, dataAdesao, dataMaiorQue);
 
-                _view.TabelaClientes.ItemsSource = resultado;
+                var clienteViewModel = resultado.Select(cliente => new ClienteViewModel
+                {
+                    ClientID = cliente.Id,
+                    ClientName = cliente.Nome,
+                    Telefone = cliente.Telefone,
+                    Cep = cliente.CEP,
+                    DataAdesao = cliente.DataAdesao,
+                    NumeroContas = cliente.Contas?.Count() ?? 0
+                }).ToList();
+
+
+                _view.TabelaClientes.ItemsSource = clienteViewModel;
                 return true;
             }
             catch (Exception ex)
@@ -113,7 +136,7 @@ namespace Projeto_UVV_Fintech.Controller
             }
         }
 
-        public void AbrirViewContas(Cliente clienteSelecionado)
+        public void AbrirViewContas(ClienteViewModel clienteSelecionado)
         {
             _view.Hide();
             var window = new ViewContas(clienteSelecionado) { Owner = _view };

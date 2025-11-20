@@ -50,12 +50,12 @@ namespace Projeto_UVV_Fintech.Views
             contaController.ListarContas();
             PerformSearch();
         }
-        public ViewContas(Cliente clienteSelecionado)
+        public ViewContas(ClienteViewModel clienteSelecionado)
         {
             InitializeComponent();
             contaController = new ContaController(this);
 
-            ClienteID.Text = clienteSelecionado.Id.ToString();
+            ClienteID.Text = clienteSelecionado.ClientID.ToString();
 
             contaController.ListarContas();
             PerformSearch();

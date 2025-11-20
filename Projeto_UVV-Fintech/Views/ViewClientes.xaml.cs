@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Projeto_UVV_Fintech.Banco_Dados.Entities;
+using Projeto_UVV_Fintech.ViewModels;
 
 namespace Projeto_UVV_Fintech.Views
 {
@@ -35,14 +36,14 @@ namespace Projeto_UVV_Fintech.Views
         {
             InitializeComponent();
             clienteController = new ClienteController(this);
-            TabelaClientes.ItemsSource = clienteController.ListarClientes();
+            clienteController.ListarClientes();
         }
 
         public ViewClientes(int IdCliente)
         {
             InitializeComponent();
             clienteController = new ClienteController(this);
-            TabelaClientes.ItemsSource = clienteController.ListarClientes();
+            clienteController.ListarClientes();
 
             ClientID = IdCliente;
             IdInput.Text = IdCliente.ToString();
@@ -161,7 +162,7 @@ namespace Projeto_UVV_Fintech.Views
             Button button = sender as Button;
             if (button == null) return;
 
-            Cliente clienteSelecionado = button.DataContext as Cliente;
+            ClienteViewModel clienteSelecionado = button.DataContext as ClienteViewModel;
             if (clienteSelecionado != null)
             {
                 clienteController.AbrirViewContas(clienteSelecionado);

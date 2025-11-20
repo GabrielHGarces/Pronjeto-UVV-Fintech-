@@ -360,6 +360,14 @@ namespace Projeto_UVV_Fintech.Controller
             _view.Opacity = 1;
         }
 
+        public void AbrirTransacoes(string NumConta)
+        {
+            _view.Hide();
+            var window = new ViewTransacoes(int.Parse(NumConta)) { Owner = _view };
+            window.ShowDialog();
+            _view.Close();
+        }
+
         public bool AbrirSaqueDialog(Window owner, int numConta, string tipoConta)
         {
             owner.Opacity = 0.5;

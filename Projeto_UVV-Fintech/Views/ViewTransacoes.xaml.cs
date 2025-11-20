@@ -37,6 +37,16 @@ namespace Projeto_UVV_Fintech.Views
             _controller.ListarTransacoes();
         }
 
+        public ViewTransacoes(int nConta)
+        {
+            InitializeComponent();
+            _controller = new TransacaoController(this);
+            contaRemetente = nConta;
+            RemetenteInput.Text = nConta.ToString();
+
+            SearchButton_Click(null, null);
+        }
+
         private void NumericTextBox_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
         {
             TextBox textBox = sender as TextBox;

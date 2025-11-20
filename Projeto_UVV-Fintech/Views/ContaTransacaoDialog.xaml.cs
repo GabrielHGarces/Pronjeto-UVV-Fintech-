@@ -158,5 +158,11 @@ namespace Projeto_UVV_Fintech.Views
                 SelecionarCLiente(NumConta);
             }
         }
+
+        private void VerTransacoes_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+            _controller.AbrirTransacoes(contaInput.Text);
+        }
     }
 }

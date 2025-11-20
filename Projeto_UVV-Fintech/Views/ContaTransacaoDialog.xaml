@@ -59,7 +59,8 @@
             <Button Content="Transferir" Width="80" Margin="5" Click="TransferirButton_Click"/>
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Width="171">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Width="328">
+            <Button Content="Ver Transações" Width="153" Margin="5" Click="VerTransacoes_Click" Height="28"/>
             <Button Content="Voltar" Width="153" Margin="5" Click="Button_Click" Height="28"/>
         </StackPanel>
     </StackPanel>
