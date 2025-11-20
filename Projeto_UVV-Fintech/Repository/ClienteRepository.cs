@@ -74,7 +74,7 @@ namespace Projeto_UVV_Fintech.Repository
 
 
 
-        public void DeletarCliente(int clienteId)
+        public  static void  DeletarCliente(int clienteId)
         {
             using var context = new DB_Context();
             var cliente = context.Clientes.Find(clienteId);
@@ -126,11 +126,9 @@ namespace Projeto_UVV_Fintech.Repository
             var cliente = context.Clientes.Find(id);
             if (cliente != null)
             {
-                //MessageBox.Show($"ID: {cliente.Id}, Nome: {cliente.Nome}, Telefone: {cliente.Telefone}, Data de Nascimento: {cliente.DataNascimento}, CEP: {cliente.CEP}");
             }
             else
             {
-                //MessageBox.Show("Cliente não encontrado.");
             }
 
         }
@@ -145,12 +143,10 @@ namespace Projeto_UVV_Fintech.Repository
             {
                 foreach (var cliente in clientes)
                 {
-                    //MessageBox.Show($"ID: {cliente.Id}, Nome: {cliente.Nome}, Telefone: {cliente.Telefone}, Data de Nascimento: {cliente.DataNascimento}, CEP: {cliente.CEP}");
                 }
             }
             else
             {
-                //MessageBox.Show("Nenhum cliente encontrado com esse nome.");
             }
         }
 
@@ -164,12 +160,10 @@ namespace Projeto_UVV_Fintech.Repository
             {
                 foreach (var cliente in clientes)
                 {
-                    //MessageBox.Show($"ID: {cliente.Id}, Nome: {cliente.Nome}, Telefone: {cliente.Telefone}, Data de Nascimento: {cliente.DataNascimento}, CEP: {cliente.CEP}");
                 }
             }
             else
             {
-                //MessageBox.Show("Nenhum cliente encontrado com esse telefone.");
             }
         }
 
@@ -183,12 +177,10 @@ namespace Projeto_UVV_Fintech.Repository
             {
                 foreach (var cliente in clientes)
                 {
-                    //MessageBox.Show($"ID: {cliente.Id}, Nome: {cliente.Nome}, Telefone: {cliente.Telefone}, Data de Nascimento: {cliente.DataNascimento}, CEP: {cliente.CEP}");
                 }
             }
             else
             {
-                //MessageBox.Show("Nenhum cliente encontrado com esse CEP.");
             }
         }
 
@@ -202,12 +194,10 @@ namespace Projeto_UVV_Fintech.Repository
             {
                 foreach (var cliente in clientes)
                 {
-                    //MessageBox.Show($"ID: {cliente.Id}, Nome: {cliente.Nome}, Telefone: {cliente.Telefone}, Data de Nascimento: {cliente.DataNascimento}, CEP: {cliente.CEP}");
                 }
             }
             else
             {
-                //MessageBox.Show("Nenhum cliente encontrado com essa data de nascimento.");
             }
         }
 

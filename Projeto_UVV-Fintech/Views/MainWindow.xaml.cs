@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using Projeto_UVV_Fintech.Banco_Dados.Entities;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -8,8 +9,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using static Projeto_UVV_Fintech.Banco_Dados.Entities.Conta;
+using static Projeto_UVV_Fintech.Repository.ContaPoupancaRepository;
+using static Projeto_UVV_Fintech.Repository.ContaCorrenteRepository;
+using static Projeto_UVV_Fintech.Repository.ClienteRepository;
 
 namespace Projeto_UVV_Fintech.Views
+
+
 {
     public partial class MainWindow : Window
     {
@@ -17,7 +24,9 @@ namespace Projeto_UVV_Fintech.Views
         public MainWindow()
         {
             InitializeComponent();
-            
+            //DeletarContaPoupanca(1);
+            //DeletarContaCorrente(1);
+            //DeletarCliente(1);
         }
 
         private void CenterWindowOnScreen()

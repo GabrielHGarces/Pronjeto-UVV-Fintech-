@@ -101,7 +101,6 @@ namespace Projeto_UVV_Fintech.Repository
             }
             else
             {
-                //MessageBox.Show("Transação não encontrada.");
 
 
             }

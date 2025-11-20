@@ -13,17 +13,42 @@ namespace Projeto_UVV_Fintech.Repository
         public static bool CriarConta(int clienteId)
         {
             using var context = new DB_Context();
-            Conta novo = new ContaPoupanca();
-            var clienteAssociado = context.Clientes.Find(clienteId);
-            novo.Saldo = 0;
-            novo.ClienteId = clienteId;
-            novo.Cliente = clienteAssociado;
-            Random rand = new Random();
-            novo.Agencia = rand.Next(10000, 99999); // Gera um número de agência aleatório entre 10000 e 99999
-            novo.NumeroConta = rand.Next(100000, 999999); // Gera um número de conta aleatório entre 100000 e 999999
+            int agencia =0;
+            var clienteAssociado = context.Clientes
+                .Include(c => c.Contas)
+                .FirstOrDefault(c => c.Id == clienteId);
 
-            clienteAssociado.NumeroContasCliente += 1;
+            if (clienteAssociado == null)
+                return false;
+
+            // VERIFICA SE JÁ EXISTE Uma Conta Poupança
+            foreach (var conta in clienteAssociado.Contas)
+            {
+                if (conta != null)
+                {
+                    agencia = conta.Agencia;
+                }
+
+                if (conta is ContaPoupanca)
+                    return false;
+            }
+            if (agencia == 0)
+            {
+                agencia = new Random().Next(10000, 99999);
+            }
+
+            Conta novo = new ContaPoupanca
+            {
+                Saldo = 0,
+                ClienteId = clienteId,
+                Cliente = clienteAssociado,
+                Agencia = agencia,
+                NumeroConta = new Random().Next(100000, 999999),
+            };
+
+            clienteAssociado.NumeroContasCliente++;
             clienteAssociado.Contas.Add(novo);
+
             context.Contas.Add(novo);
             context.SaveChanges();
 
@@ -157,11 +182,10 @@ namespace Projeto_UVV_Fintech.Repository
             }
             else
             {
-                //MessageBox.Show("Conta Poupança não encontrada.");
             }
         }
 
-        public void DeletarContaPoupanca(int contaId)
+        public static void DeletarContaPoupanca(int contaId)
         {
             using var context = new DB_Context();
             var conta = context.Contas.Find(contaId);
@@ -172,7 +196,6 @@ namespace Projeto_UVV_Fintech.Repository
             }
             else
             {
-                //MessageBox.Show("Conta Poupança não encontrada.");
             }
         }
 
@@ -199,11 +222,9 @@ namespace Projeto_UVV_Fintech.Repository
             var conta = context.Contas.Find(contaId);
             if (conta != null && conta is ContaPoupanca)
             {
-                //MessageBox.Show($"ID: {conta.Id}, Tipo de Conta: Poupança, Saldo: {conta.Saldo}, ClienteId: {conta.ClienteId}, Data de Criação: {conta.DataCriacao}");
             }
             else
             {
-                //MessageBox.Show("Conta Poupança não encontrada.");
             }
 
         }
@@ -216,12 +237,10 @@ namespace Projeto_UVV_Fintech.Repository
             {
                 foreach (var conta in contas)
                 {
-                    //MessageBox.Show($"ID: {conta.Id}, Tipo de Conta: Poupança, Saldo: {conta.Saldo}, ClienteId: {conta.ClienteId}, Data de Criação: {conta.DataCriacao}");
                 }
             }
             else
             {
-                //MessageBox.Show("Nenhuma Conta Poupança encontrada para este Cliente.");
             }
         }
 
@@ -231,7 +250,6 @@ namespace Projeto_UVV_Fintech.Repository
             var contas = context.Contas.OfType<ContaPoupanca>().ToList();
             foreach (var conta in contas)
             {
-                //MessageBox.Show($"ID: {conta.Id}, Tipo de Conta: Poupança, Saldo: {conta.Saldo}, ClienteId: {conta.ClienteId}, Data de Criação: {conta.DataCriacao}");
             }
         }
 
@@ -244,12 +262,10 @@ namespace Projeto_UVV_Fintech.Repository
             {
                 foreach (var conta in contas)
                 {
-                    //MessageBox.Show($"ID: {conta.Id}, Tipo de Conta: Poupança, Saldo: {conta.Saldo}, ClienteId: {conta.ClienteId}, Data de Criação: {conta.DataCriacao}");
                 }
             }
             else
             {
-                //MessageBox.Show("Nenhuma Conta Poupança encontrada com saldo maior que o valor especificado.");
             }
         }
 
@@ -261,12 +277,10 @@ namespace Projeto_UVV_Fintech.Repository
             {
                 foreach (var conta in contas)
                 {
-                    //MessageBox.Show($"ID: {conta.Id}, Tipo de Conta: Poupança, Saldo: {conta.Saldo}, ClienteId: {conta.ClienteId}, Data de Criação: {conta.DataCriacao}");
                 }
             }
             else
             {
-                //MessageBox.Show("Nenhuma Conta Poupança encontrada com saldo menor que o valor especificado.");
             }
         }
 
@@ -280,12 +294,10 @@ namespace Projeto_UVV_Fintech.Repository
             {
                 foreach (var conta in contas)
                 {
-                    //MessageBox.Show($"ID: {conta.Id}, Tipo de Conta: Poupança, Saldo: {conta.Saldo}, ClienteId: {conta.ClienteId}, Data de Criação: {conta.DataCriacao}");
                 }
             }
             else
             {
-                //MessageBox.Show("Nenhuma Conta Poupança encontrada para o nome de cliente especificado.");
             }
         }
     }
