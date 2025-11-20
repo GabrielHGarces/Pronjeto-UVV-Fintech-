@@ -190,35 +190,149 @@ namespace Projeto_UVV_Fintech.Controller
             
         }
 
-        //public void sacar(Conta conta, double valor)
-        //{
-        //    if (conta.Sacar(valor))
-        //    {
-        //        MessageBox.Show("Valor de: R$" + valor + "Sacado com sucesso!");
-        //    }
-        //}
+        public void Sacar(int numConta, string tipoConta, double valor)
+        {
+            try
+            {
+                Conta? conta = null;
+                if (tipoConta == "CC")
+                {
+                    conta = ContaCorrenteRepository.FiltrarContas(null, numConta, null, null, null, null, null, null, null).FirstOrDefault();
+                }
+                else if (tipoConta == "CP")
+                {
+                    conta = ContaPoupancaRepository.FiltrarContas(null, numConta, null, null, null, null, null, null, null).FirstOrDefault();
+                }
 
-        //public void depositar(Conta conta, double valor)
-        //{
-        //    if (conta.Depositar(valor))
-        //    {
-        //        MessageBox.Show("Valor de: R$" + valor + "Depositado com sucesso!");
-        //    }
-        //}
+                if (conta == null)
+                {
+                    MessageBox.Show("Conta não encontrada.");
+                    return;
+                }
 
-        //public void transferir(Conta contaOrigem, Conta contaDestino, double valor)
-        //{
+                bool sucesso = false;
+                if (tipoConta == "CC")
+                {
+                    sucesso = ContaCorrenteRepository.Sacar(conta, valor);
+                }
+                else if (tipoConta == "CP")
+                {
+                    sucesso = ContaPoupancaRepository.Sacar(conta, valor);
+                }
 
-        //    if (contaOrigem.Transferir(contaDestino, valor))
-        //    {
-        //        MessageBox.Show("Valor de: R$" + valor + "Transferido com sucesso para a conta " + contaDestino + "!");
-        //    }
-        //}
+                if (sucesso)
+                {
+                    MessageBox.Show($"Saque de R${valor:F2} realizado com sucesso!");
+                }
+                else
+                {
+                    MessageBox.Show("Falha ao realizar o saque. Verifique o saldo e os dados da conta.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erro ao realizar saque: " + ex.Message);
+            }
+        }
 
-        //public static Conta? ObterContaPorId(int contaId)
-        //{
-        //    return Conta.ObterContaPorId(contaId);
-        //}
+        public void Depositar(int numConta, string tipoConta, double valor)
+        {
+            try
+            {
+                Conta? conta = null;
+                if (tipoConta == "CC")
+                {
+                    conta = ContaCorrenteRepository.FiltrarContas(null, numConta, null, null, null, null, null, null, null).FirstOrDefault();
+                }
+                else if (tipoConta == "CP")
+                {
+                    conta = ContaPoupancaRepository.FiltrarContas(null, numConta, null, null, null, null, null, null, null).FirstOrDefault();
+                }
+
+                if (conta == null)
+                {
+                    MessageBox.Show("Conta não encontrada.");
+                    return;
+                }
+
+                bool sucesso = false;
+                if (tipoConta == "CC")
+                {
+                    sucesso = ContaCorrenteRepository.Depositar(conta, valor);
+                }
+                else if (tipoConta == "CP")
+                {
+                    sucesso = ContaPoupancaRepository.Depositar(conta, valor);
+                }
+
+                if (sucesso)
+                {
+                    MessageBox.Show($"Depósito de R${valor:F2} realizado com sucesso!");
+                }
+                else
+                {
+                    MessageBox.Show("Falha ao realizar o depósito.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erro ao realizar depósito: " + ex.Message);
+            }
+        }
+
+        public void Transferir(int numContaOrigem, string tipoContaOrigem, int numContaDestino, double valor)
+        {
+            try
+            {
+                Conta? contaOrigem = null;
+                if (tipoContaOrigem == "CC")
+                {
+                    contaOrigem = ContaCorrenteRepository.FiltrarContas(null, numContaOrigem, null, null, null, null, null, null, null).FirstOrDefault();
+                }
+                else if (tipoContaOrigem == "CP")
+                {
+                    contaOrigem = ContaPoupancaRepository.FiltrarContas(null, numContaOrigem, null, null, null, null, null, null, null).FirstOrDefault();
+                }
+
+                if (contaOrigem == null)
+                {
+                    MessageBox.Show("Conta de origem não encontrada.");
+                    return;
+                }
+
+                Conta? contaDestino = (Conta?)ContaCorrenteRepository.FiltrarContas(null, numContaDestino, null, null, null, null, null, null, null).FirstOrDefault()
+                                     ?? (Conta?)ContaPoupancaRepository.FiltrarContas(null, numContaDestino, null, null, null, null, null, null, null).FirstOrDefault();
+
+                if (contaDestino == null)
+                {
+                    MessageBox.Show("Conta de destino não encontrada.");
+                    return;
+                }
+
+                bool sucesso = false;
+                if (tipoContaOrigem == "CC")
+                {
+                    sucesso = ContaCorrenteRepository.Transferir(contaOrigem, contaDestino, valor);
+                }
+                else if (tipoContaOrigem == "CP")
+                {
+                    sucesso = ContaPoupancaRepository.Transferir(contaOrigem, contaDestino, valor);
+                }
+
+                if (sucesso)
+                {
+                    MessageBox.Show($"Transferência de R${valor:F2} para a conta {numContaDestino} realizada com sucesso!");
+                }
+                else
+                {
+                    MessageBox.Show("Falha ao realizar a transferência. Verifique os dados e o saldo.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erro ao realizar transferência: " + ex.Message);
+            }
+        }
 
         public string GetNomeClientePorId(string idCliente)
         {
@@ -244,6 +358,48 @@ namespace Projeto_UVV_Fintech.Controller
             var dialog = new ContaTransacaoDialog(int.Parse(NumConta), this) { Owner = _view };
             bool? resultado = dialog.ShowDialog();
             _view.Opacity = 1;
+        }
+
+        public bool AbrirSaqueDialog(Window owner, int numConta, string tipoConta)
+        {
+            owner.Opacity = 0.5;
+            var dialog = new SaqueDialog(this, numConta, tipoConta) { Owner = owner };
+            bool? result = dialog.ShowDialog();
+            owner.Opacity = 1;
+            if (result == true)
+            {
+                ListarContas();
+                return true;
+            }
+            return false;
+        }
+
+        public bool AbrirDepositoDialog(Window owner, int numConta, string tipoConta)
+        {
+            owner.Opacity = 0.5;
+            var dialog = new DepositoDialog(this, numConta, tipoConta) { Owner = owner };
+            bool? result = dialog.ShowDialog();
+            owner.Opacity = 1;
+            if (result == true)
+            {
+                ListarContas();
+                return true;
+            }
+            return false;
+        }
+
+        public bool AbrirTransferenciaDialog(Window owner, int numConta, string tipoConta)
+        {
+            owner.Opacity = 0.5;
+            var dialog = new TransferenciaDialog(this, numConta, tipoConta) { Owner = owner };
+            bool? result = dialog.ShowDialog();
+            owner.Opacity = 1;
+            if (result == true)
+            {
+                ListarContas();
+                return true;
+            }
+            return false;
         }
     }
 }

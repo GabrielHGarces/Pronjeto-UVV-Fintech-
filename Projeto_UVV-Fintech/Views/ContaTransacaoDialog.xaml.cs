@@ -61,6 +61,8 @@ namespace Projeto_UVV_Fintech.Views
             ContaViewModel? conta = _controller.FiltrarContas(null, NumConta, null, null, null, null, null, null, null).FirstOrDefault();
             if (conta == null) return;
 
+            _controller.ListarContas();
+
             contaInput.Text = conta.NumeroConta.ToString();
             TipoInput.Text = conta.Tipo;
             // Formata como moeda BR: "R$ 1.234,56"
@@ -131,6 +133,30 @@ namespace Projeto_UVV_Fintech.Views
         {
             DialogResult = false;
             Close();
+        }
+
+        private void SacarButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_controller.AbrirSaqueDialog(this, NumConta, TipoInput.Text))
+            {
+                SelecionarCLiente(NumConta);
+            }
+        }
+
+        private void DepositarButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_controller.AbrirDepositoDialog(this, NumConta, TipoInput.Text))
+            {
+                SelecionarCLiente(NumConta);
+            }
+        }
+
+        private void TransferirButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_controller.AbrirTransferenciaDialog(this, NumConta, TipoInput.Text))
+            {
+                SelecionarCLiente(NumConta);
+            }
         }
     }
 }

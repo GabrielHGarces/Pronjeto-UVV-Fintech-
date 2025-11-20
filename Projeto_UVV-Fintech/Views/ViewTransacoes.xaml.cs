@@ -179,7 +179,8 @@ namespace Projeto_UVV_Fintech.Views
             Button button = sender as Button;
             if (button?.DataContext is Transacao transacaoSelecionada)
             {
-                //_controller.AbrirViewContas(transacaoSelecionada.ContaRemetente);
+                int nConta = transacaoSelecionada.ContaRemetente ?? 0;
+                _controller.AbrirViewContas(nConta);
             }
         }
 
@@ -188,7 +189,8 @@ namespace Projeto_UVV_Fintech.Views
             Button button = sender as Button;
             if (button?.DataContext is Transacao transacaoSelecionada)
             {
-                //_controller.AbrirViewContas(transacaoSelecionada.ContaDestinatario);
+                int nConta = transacaoSelecionada.ContaRemetente ?? 0;
+                _controller.AbrirViewContas(nConta);
             }
         }
     }
