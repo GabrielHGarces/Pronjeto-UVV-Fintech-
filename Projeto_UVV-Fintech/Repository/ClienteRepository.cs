@@ -1,4 +1,5 @@
-﻿using Projeto_UVV_Fintech.Banco_Dados.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using Projeto_UVV_Fintech.Banco_Dados.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,7 +33,7 @@ namespace Projeto_UVV_Fintech.Repository
         public static List<Cliente> ListarClientes()
         {
             using var context = new DB_Context();
-            return context.Clientes.ToList();
+            return context.Clientes.Include(c => c.Contas).ToList();
             
         }
 
@@ -56,7 +57,8 @@ namespace Projeto_UVV_Fintech.Repository
                     && (string.IsNullOrWhiteSpace(nomeCliente) ||
                         (!string.IsNullOrWhiteSpace(c.Nome) && c.Nome.Contains(nomeCliente, StringComparison.OrdinalIgnoreCase)))
 
-                    
+                    // Filtra por número de contas
+                    && (numeroDeContas == null || c.Contas.Count == numeroDeContas)
 
                     // Filtra por data de adesão (opcional)
                     && (
@@ -74,10 +76,6 @@ namespace Projeto_UVV_Fintech.Repository
         }
 
 
-
-        
-
-        
         //Usada em Cliente Controller
 
         public static Cliente ObterClientePorId(int clienteId)
@@ -91,19 +89,6 @@ namespace Projeto_UVV_Fintech.Repository
             using var context = new DB_Context();
             return context.Clientes.ToList();
         }
-
-        
-
-        
-
-       
-
-        
-
-        
-
-        
-
     }
     
 }
