@@ -1,20 +1,36 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Projeto_UVV_Fintech.Banco_Dados.Entities;
+using Projeto_UVV_Fintech.Repository.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-
-
+/*
+ * ====================================================================
+ * APLICAÇÃO DE BOAS PRÁTICAS: Implementação do Contrato
+ * ====================================================================
+ *
+ * 1. CUMPRINDO O CONTRATO:
+ *    - Esta classe agora implementa a interface `IClienteRepository`.
+ *      Isso significa que ela é obrigada a ter todos os métodos que
+ *      foram definidos no "contrato", garantindo consistência.
+ *
+ * 2. MÉTODOS NÃO ESTÁTICOS:
+ *    - Os métodos deixaram de ser `static` para que a classe possa ser
+ *      instanciada como um objeto. Isso é essencial para que a
+ *      "Injeção de Dependência" funcione e para que os testes
+ *      sejam facilitados.
+ *
+ */
 namespace Projeto_UVV_Fintech.Repository
 {
-    internal class ClienteRepository
+    public class ClienteRepository : IClienteRepository
     {
-        
-        
-        public static bool CriarCliente(string name, string cEP, string telefone)
+
+
+        public bool CriarCliente(string name, string cEP, string telefone)
         {
 
             using var context = new DB_Context();
@@ -22,7 +38,7 @@ namespace Projeto_UVV_Fintech.Repository
             CliNovo.Nome = name;
             CliNovo.Telefone = telefone;
             CliNovo.CEP = cEP;
-            
+
 
             context.Clientes.Add(CliNovo);
             context.SaveChanges();
@@ -30,14 +46,14 @@ namespace Projeto_UVV_Fintech.Repository
             return true;
         }
 
-        public static List<Cliente> ListarClientes()
+        public List<Cliente> ListarClientes()
         {
             using var context = new DB_Context();
             return context.Clientes.Include(c => c.Contas).ToList();
-            
+
         }
 
-        public static List<Cliente> FiltrarClientes(int? idCliente,string? telefone,string? cep, string? nomeCliente, int? numeroDeContas, DateTime? dataAdesao,bool? dataMaiorQue)
+        public List<Cliente> FiltrarClientes(int? idCliente, string? telefone, string? cep, string? nomeCliente, int? numeroDeContas, DateTime? dataAdesao, bool? dataMaiorQue)
         {
             List<Cliente> clientes = ListarClientes();
             var filtrado = clientes
@@ -78,7 +94,7 @@ namespace Projeto_UVV_Fintech.Repository
 
         //Usada em Cliente Controller
 
-        public static Cliente ObterClientePorId(int clienteId)
+        public Cliente ObterClientePorId(int clienteId)
         {
             using var context = new DB_Context();
             return context.Clientes.Find(clienteId);
@@ -90,5 +106,5 @@ namespace Projeto_UVV_Fintech.Repository
             return context.Clientes.ToList();
         }
     }
-    
+
 }

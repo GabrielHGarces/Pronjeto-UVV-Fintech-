@@ -1,16 +1,37 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Projeto_UVV_Fintech.Banco_Dados.Entities;
+using Projeto_UVV_Fintech.Repository.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+/*
+ * ====================================================================
+ * APLICAÇÃO DE BOAS PRÁTICAS: Implementação do Contrato
+ * ====================================================================
+ *
+ * 1. CUMPRINDO O CONTRATO:
+ *    - Esta classe também implementa a interface `IContaRepository`,
+ *      assim como a `ContaCorrenteRepository`.
+ *
+ * 2. CLASSES INTERCAMBIÁVEIS:
+ *    - Por implementar o mesmo "contrato", o Controller pode usar
+ *      esta classe ou a `ContaCorrenteRepository` da mesma forma,
+ *      sem precisar saber dos detalhes de cada uma.
+ *
+ * 3. NOMES CONSISTENTES E MÉTODOS NÃO ESTÁTICOS:
+ *    - Os métodos foram renomeados (ex: `SacarPoupanca` para `Sacar`)
+ *      para cumprir o contrato da interface e mantidos como métodos
+ *      de instância para permitir o desacoplamento e os testes.
+ *
+ */
 namespace Projeto_UVV_Fintech.Repository
 {
-    internal class ContaPoupancaRepository
+    public class ContaPoupancaRepository : IContaRepository
     {
-        public static bool CriarConta(int clienteId)
+        public bool CriarConta(int clienteId)
         {
             using var context = new DB_Context();
             int agencia =0;
@@ -57,13 +78,13 @@ namespace Projeto_UVV_Fintech.Repository
             return true;
         }
 
-        public static List<ContaPoupanca> ListarContas()
+        public List<Conta> ListarContas()
         {
             using var context = new DB_Context();
-            return context.Contas.OfType<ContaPoupanca>().Include(c => c.Cliente).ToList();
+            return context.Contas.OfType<ContaPoupanca>().Include(c => c.Cliente).Cast<Conta>().ToList();
         }
 
-        public static bool DepositarPoupanca(int contaId, double valor)
+        public bool Depositar(int contaId, double valor)
         {
             using var context = new DB_Context();
 
@@ -86,7 +107,7 @@ namespace Projeto_UVV_Fintech.Repository
         }
 
 
-        public static int ObterNumeroContaPorId(int contaId)
+        public int ObterNumeroContaPorId(int contaId)
         {
             using var context = new DB_Context();
 
@@ -98,7 +119,7 @@ namespace Projeto_UVV_Fintech.Repository
             return conta;
         }
 
-        public static bool SacarPoupanca(int contaId, double valor)
+        public bool Sacar(int contaId, double valor)
         {
             using var context = new DB_Context();
 
@@ -120,7 +141,7 @@ namespace Projeto_UVV_Fintech.Repository
             return true;
         }
 
-        public static ContaPoupanca ObterContaPorNumero(int numeroConta)
+        public Conta ObterContaPorNumero(int numeroConta)
         {
             using var context = new DB_Context();
 
@@ -130,18 +151,15 @@ namespace Projeto_UVV_Fintech.Repository
                 .FirstOrDefault(c => c.NumeroConta == numeroConta);
         }
 
-        public static bool TransferirPoupanca(int contaOrigemId, int contaDestinoId, double valor)
+        public bool Transferir(int contaOrigemId, int contaDestinoId, double valor)
         {
             using var context = new DB_Context();
 
             var contaOrigem = context.Contas
                 .OfType<ContaPoupanca>()
-                .AsNoTracking()
                 .FirstOrDefault(c => c.Id == contaOrigemId);
 
             var contaDestino = context.Contas
-                .OfType<ContaPoupanca>()
-                .AsNoTracking()
                 .FirstOrDefault(c => c.Id == contaDestinoId);
 
             if (contaOrigem == null || contaDestino == null)
@@ -152,13 +170,7 @@ namespace Projeto_UVV_Fintech.Repository
 
             contaOrigem.Saldo -= valor;
             contaDestino.Saldo += valor;
-
-            context.Attach(contaOrigem);
-            context.Attach(contaDestino);
-
-            context.Entry(contaOrigem).Property(c => c.Saldo).IsModified = true;
-            context.Entry(contaDestino).Property(c => c.Saldo).IsModified = true;
-
+            
             context.SaveChanges();
 
             TransacaoRepository.CriarTransacao(
@@ -172,7 +184,7 @@ namespace Projeto_UVV_Fintech.Repository
 
 
 
-        public static List<Conta> FiltrarContas(int? idCliente, int? numeroConta, int? numeroAgencia, string? tipoConta, string? nomeTitular, double? saldo, DateTime? dataCriacao, bool? saldoMaior, bool? dataMaior)
+        public List<Conta> FiltrarContas(int? idCliente, int? numeroConta, int? numeroAgencia, string? tipoConta, string? nomeTitular, double? saldo, DateTime? dataCriacao, bool? saldoMaior, bool? dataMaior)
         {
             using var context = new DB_Context();
             IQueryable<Conta> query = context.Contas.OfType<ContaPoupanca>().Include(c => c.Cliente);

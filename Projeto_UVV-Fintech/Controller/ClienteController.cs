@@ -1,6 +1,6 @@
-﻿//using Projeto_UVV_Fintech.Model;
-using Projeto_UVV_Fintech.Banco_Dados.Entities;
+﻿using Projeto_UVV_Fintech.Banco_Dados.Entities;
 using Projeto_UVV_Fintech.Repository;
+using Projeto_UVV_Fintech.Repository.Interfaces;
 using Projeto_UVV_Fintech.ViewModels;
 using Projeto_UVV_Fintech.Views;
 using System;
@@ -10,18 +10,52 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
+/*
+ * ====================================================================
+ * APLICAÇÃO DE BOAS PRÁTICAS NO CONTROLLER
+ * ====================================================================
+ *
+ * 1. INJEÇÃO DE DEPENDÊNCIA (DE FORMA SIMPLES):
+ *    - O Controller agora depende do "contrato" `IClienteRepository`,
+ *      e não da classe concreta com métodos estáticos.
+ *    - A instância é criada no construtor. Isso quebra o acoplamento
+ *      rígido que existia.
+ *
+ * 2. CÓDIGO SEM REPETIÇÃO ("Don't Repeat Yourself"):
+ *    - A lógica para converter um `Cliente` em um `ClienteViewModel`
+ *      foi colocada em um método separado (`MapToViewModel`).
+ *    - Isso evita repetir o mesmo código em `ListarClientes` e
+ *      `FiltrarClientes`, simplificando a manutenção.
+ *
+ */
 namespace Projeto_UVV_Fintech.Controller
 {
     public class ClienteController
     {
         private readonly ViewClientes _view;
+        private readonly IClienteRepository _clienteRepository;
 
         public ClienteController(ViewClientes view)
         {
             _view = view;
+            // A dependência é criada aqui, de forma controlada.
+            _clienteRepository = new ClienteRepository();
         }
 
-        //Comentários para evitar erros de compilação pela falta dos métodos em model/Conta.cs
+        // Método auxiliar para não repetir o código de conversão.
+        private ClienteViewModel MapToViewModel(Cliente cliente)
+        {
+            return new ClienteViewModel
+            {
+                ClientID = cliente.Id,
+                ClientName = cliente.Nome,
+                Telefone = cliente.Telefone,
+                Cep = cliente.CEP,
+                DataAdesao = cliente.DataAdesao,
+                NumeroContas = cliente.Contas?.Count() ?? 0
+            };
+        }
+
         public bool CriarCliente()
         {
             try
@@ -66,7 +100,8 @@ namespace Projeto_UVV_Fintech.Controller
 
             try
             {
-                if (ClienteRepository.CriarCliente(nome, telefone, cep))
+                // A chamada agora é feita através da interface, e não mais de um método estático.
+                if (_clienteRepository.CriarCliente(nome, telefone, cep))
                 {
                     MessageBox.Show($"Cliente salvo:\nNome: {nome}\nTelefone: {telefone}\nCEP: {cep}");
                     return true;
@@ -85,17 +120,10 @@ namespace Projeto_UVV_Fintech.Controller
         {
             try
             {
-                List<Cliente> resultado = ClienteRepository.ListarClientes();
+                List<Cliente> resultado = _clienteRepository.ListarClientes();
 
-                var clienteViewModel = resultado.Select(cliente => new ClienteViewModel
-                {
-                    ClientID = cliente.Id,
-                    ClientName = cliente.Nome,
-                    Telefone = cliente.Telefone,
-                    Cep = cliente.CEP,
-                    DataAdesao = cliente.DataAdesao,
-                    NumeroContas = cliente.Contas?.Count() ?? 0
-                }).ToList();
+                // Usando o método auxiliar para manter o código limpo.
+                var clienteViewModel = resultado.Select(MapToViewModel).ToList();
 
                 _view.TabelaClientes.ItemsSource = clienteViewModel;
                 return clienteViewModel;
@@ -114,19 +142,11 @@ namespace Projeto_UVV_Fintech.Controller
         {
             try
             {
-                List<Cliente> resultado = ClienteRepository.FiltrarClientes(
+                List<Cliente> resultado = _clienteRepository.FiltrarClientes(
                 idCliente, telefone, cep, nomeCliente,
                 numeroDeContas, dataAdesao, dataMaiorQue);
 
-                var clienteViewModel = resultado.Select(cliente => new ClienteViewModel
-                {
-                    ClientID = cliente.Id,
-                    ClientName = cliente.Nome,
-                    Telefone = cliente.Telefone,
-                    Cep = cliente.CEP,
-                    DataAdesao = cliente.DataAdesao,
-                    NumeroContas = cliente.Contas?.Count() ?? 0
-                }).ToList();
+                var clienteViewModel = resultado.Select(MapToViewModel).ToList();
 
 
                 _view.TabelaClientes.ItemsSource = clienteViewModel;
@@ -137,6 +157,11 @@ namespace Projeto_UVV_Fintech.Controller
                 MessageBox.Show($"Erro ao filtrar os clientes: {ex.Message}");
                 return new List<ClienteViewModel>();
             }
+        }
+        
+        public Cliente ObterClientePorId(int id)
+        {
+            return _clienteRepository.ObterClientePorId(id);
         }
 
         public void AbrirViewContas(ClienteViewModel clienteSelecionado)

@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Projeto_UVV_Fintech.Banco_Dados.Entities;
-using Projeto_UVV_Fintech.Repository;
+using Projeto_UVV_Fintech.Repository.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,12 +8,31 @@ using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Threading.Tasks;
 
-
+/*
+ * ====================================================================
+ * APLICAÇÃO DE BOAS PRÁTICAS: Implementação do Contrato
+ * ====================================================================
+ *
+ * 1. CUMPRINDO O CONTRATO:
+ *    - Esta classe agora implementa a interface `IContaRepository`.
+ *      Isso a torna uma implementação específica de um "repositório de conta".
+ *
+ * 2. CLASSES INTERCAMBIÁVEIS:
+ *    - Por implementar `IContaRepository`, esta classe se torna "intercambiável"
+ *      com `ContaPoupancaRepository`. O Controller pode usar qualquer uma
+ *      delas sem saber os detalhes, tratando ambas como um `IContaRepository`.
+ *
+ * 3. NOMES CONSISTENTES E MÉTODOS NÃO ESTÁTICOS:
+ *    - Os métodos foram renomeados (ex: `DepositarCorrente` para `Depositar`)
+ *      para ficarem iguais aos definidos na interface.
+ *    - Deixaram de ser `static` para permitir a Injeção de Dependência.
+ *
+ */
 namespace Projeto_UVV_Fintech.Repository
 {
-    internal class ContaCorrenteRepository 
+    public class ContaCorrenteRepository : IContaRepository
     {
-        public static bool CriarConta(int clienteId)
+        public bool CriarConta(int clienteId)
         {
             using var context = new DB_Context();
             int agencia = 0;
@@ -61,13 +80,13 @@ namespace Projeto_UVV_Fintech.Repository
         }
 
 
-        public static List<ContaCorrente> ListarContas()
+        public List<Conta> ListarContas()
         {
             using var context = new DB_Context();
-            return context.Contas.OfType<ContaCorrente>().Include(c => c.Cliente).ToList();
+            return context.Contas.OfType<ContaCorrente>().Include(c => c.Cliente).Cast<Conta>().ToList();
         }
 
-        public static bool DepositarCorrente(int contaId, double valor)
+        public bool Depositar(int contaId, double valor)
         {
             using var context = new DB_Context();
 
@@ -89,7 +108,7 @@ namespace Projeto_UVV_Fintech.Repository
             return true;
         }
 
-        public static ContaCorrente ObterContaPorNumero(int numeroConta)
+        public Conta ObterContaPorNumero(int numeroConta)
         {
             using var context = new DB_Context();
 
@@ -99,7 +118,7 @@ namespace Projeto_UVV_Fintech.Repository
                 .FirstOrDefault(c => c.NumeroConta == numeroConta);
         }
 
-        public static bool SacarCorrente(int contaId, double valor)
+        public bool Sacar(int contaId, double valor)
         {
             using var context = new DB_Context();
 
@@ -122,7 +141,7 @@ namespace Projeto_UVV_Fintech.Repository
         }
 
 
-        public static int ObterNumeroContaPorId(int contaId)
+        public int ObterNumeroContaPorId(int contaId)
         {
             using var context = new DB_Context();
 
@@ -134,7 +153,7 @@ namespace Projeto_UVV_Fintech.Repository
             return conta;
         }
 
-        public static bool TransferirCorrente(int contaOrigemId, int contaDestinoId, double valor)
+        public bool Transferir(int contaOrigemId, int contaDestinoId, double valor)
         {
             using var context = new DB_Context();
 
@@ -143,7 +162,6 @@ namespace Projeto_UVV_Fintech.Repository
                 .FirstOrDefault(c => c.Id == contaOrigemId);
 
             var contaDestino = context.Contas
-                .OfType<ContaCorrente>()
                 .FirstOrDefault(c => c.Id == contaDestinoId);
 
             if (contaOrigem == null || contaDestino == null)
@@ -170,7 +188,7 @@ namespace Projeto_UVV_Fintech.Repository
 
 
 
-        public static List<Conta> FiltrarContas(int? idCliente, int? numeroConta, int? numeroAgencia, string? tipoConta, string? nomeTitular, double? saldo, DateTime? dataCriacao, bool? saldoMaior, bool? dataMaior)
+        public List<Conta> FiltrarContas(int? idCliente, int? numeroConta, int? numeroAgencia, string? tipoConta, string? nomeTitular, double? saldo, DateTime? dataCriacao, bool? saldoMaior, bool? dataMaior)
         {
             using var context = new DB_Context();
             IQueryable<Conta> query = context.Contas.OfType<ContaCorrente>().Include(c => c.Cliente);

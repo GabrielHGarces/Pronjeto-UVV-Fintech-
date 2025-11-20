@@ -1,7 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Projeto_UVV_Fintech.Banco_Dados.Entities;
 using Projeto_UVV_Fintech.Repository;
+using Projeto_UVV_Fintech.Repository.Interfaces;
 using Projeto_UVV_Fintech.ViewModels;
 using Projeto_UVV_Fintech.Views;
 using System;
@@ -14,18 +15,80 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using static Projeto_UVV_Fintech.Views.ContaTransacaoDialog;
 
+/*
+ * ====================================================================
+ * APLICAÇÃO DE BOAS PRÁTICAS NO CONTROLLER
+ * ====================================================================
+ *
+ * Este controller foi o principal alvo da refatoração para deixar o
+ * código mais flexível e fácil de manter.
+ *
+ * PONTO PRINCIPAL: O "PRINCÍPIO ABERTO/FECHADO"
+ * --------------------------------------------------------------------
+ * Antes, o código usava vários `if/else` para tratar contas do tipo
+ * "CC" e "CP". Se um novo tipo de conta fosse adicionado, teríamos
+ * que alterar o código em vários lugares (o que é arriscado).
+ *
+ * A solução foi usar um Dicionário que "mapeia" o tipo da conta para
+ * o repositório que sabe cuidar dela. Agora, para adicionar um novo
+ * tipo de conta, basta criar o novo repositório e registrá-lo no
+ * dicionário. Nenhuma outra parte do controller precisa ser modificada.
+ *
+ * Isso significa que a classe está "aberta para extensão" (aceita
+ * novos tipos de conta) mas "fechada para modificação" (o código
+ * principal não é alterado).
+ *
+ * PONTO SECUNDÁRIO: CÓDIGO SEM REPETIÇÃO ("Don't Repeat Yourself")
+ * --------------------------------------------------------------------
+ * A lógica para converter (mapear) uma `Conta` para um `ContaViewModel`
+ * estava duplicada. Ela foi movida para um método auxiliar `MapToViewModel`
+ * para ser reutilizada, simplificando a manutenção.
+ *
+ */
 namespace Projeto_UVV_Fintech.Controller
 {
     public class ContaController
     {
         private readonly ViewContas _view;
+        private readonly IClienteRepository _clienteRepository;
+
+        // Este dicionário é a solução para evitar os `if/else`.
+        // Ele funciona como um "catálogo" de repositórios.
+        private readonly Dictionary<string, IContaRepository> _contaRepositories;
+
+        // BOA PRÁTICA: Usar constantes evita erros de digitação com "CC" e "CP".
+        private const string ContaCorrente = "CC";
+        private const string ContaPoupanca = "CP";
 
         public ContaController(ViewContas view)
         {
             _view = view;
+            _clienteRepository = new ClienteRepository();
+
+            // Aqui, "preenchemos o catálogo" com os repositórios que o sistema conhece.
+            // Para adicionar um novo tipo de conta, a mudança seria apenas aqui.
+            _contaRepositories = new Dictionary<string, IContaRepository>
+            {
+                { ContaCorrente, new ContaCorrenteRepository() },
+                { ContaPoupanca, new ContaPoupancaRepository() }
+            };
         }
 
-        //Comentários para evitar erros de compilação pela falta dos métodos em model/Conta.cs
+        // Método auxiliar para não repetir o código de conversão.
+        private ContaViewModel MapToViewModel(Conta conta)
+        {
+            return new ContaViewModel
+            {
+                ClienteId = conta.Cliente.Id,
+                Agencia = conta.Agencia,
+                NumeroConta = conta.NumeroConta,
+                Tipo = conta.GetType().Name == "ContaCorrente" ? ContaCorrente : ContaPoupanca,
+                DataCriacao = conta.DataCriacao,
+                Saldo = conta.Saldo,
+                NomeCliente = GetNomeClientePorId(conta.Cliente.Id.ToString())
+            };
+        }
+
         public bool CriarConta()
         {
             try
@@ -70,23 +133,14 @@ namespace Projeto_UVV_Fintech.Controller
 
             try
             {
-                if (tipoConta == "CC")
+                // Em vez de um `if`, buscamos no "catálogo" o repositório certo.
+                if (_contaRepositories.TryGetValue(tipoConta, out var repository))
                 {
-                    if (ContaCorrenteRepository.CriarConta(idClienteInt))
+                    if (repository.CriarConta(idClienteInt))
                     {
                         MessageBox.Show($"Conta criada com sucesso:\nId Cliente: {idClienteInt}\nTipo Conta: {tipoConta}");
                         return true;
                     }
-                    return false;
-                }
-                else if (tipoConta == "CP")
-                {
-                    if (ContaPoupancaRepository.CriarConta(idClienteInt))
-                    {
-                        MessageBox.Show($"Conta criada com sucesso:\nId Cliente: {idClienteInt}\nTipo Conta: {tipoConta}");
-                        return true;
-                    }
-                    return false;
                 }
                 return false;
             } catch (Exception ex)
@@ -100,26 +154,15 @@ namespace Projeto_UVV_Fintech.Controller
         {
             try
             {
-                List<Conta> Contas = [];
-                List<ContaPoupanca> resultadoPoupanca = ContaPoupancaRepository.ListarContas();
-                List<ContaCorrente> resultadoCorrente = ContaCorrenteRepository.ListarContas();
+                // Para listar tudo, simplesmente pegamos todos os repositórios do catálogo.
+                var todasContas = _contaRepositories.Values.SelectMany(repo => repo.ListarContas());
 
-                var todasContas = Contas.Concat(resultadoPoupanca).Concat(resultadoCorrente);
                 var contasUnicas = todasContas
                     .GroupBy(c => c.Id)
                     .Select(g => g.First())
                     .ToList();
                 
-                var contasViewModel = contasUnicas.Select(conta => new ContaViewModel
-                {
-                     ClienteId = conta.Cliente.Id,
-                     Agencia = conta.Agencia,
-                     NumeroConta = conta.NumeroConta,
-                     Tipo = conta.GetType().Name == "ContaCorrente" ? "CC" : "CP",
-                     DataCriacao = conta.DataCriacao,
-                     Saldo = conta.Saldo,
-                     NomeCliente = GetNomeClientePorId(conta.Cliente.Id.ToString())
-                }).ToList();
+                var contasViewModel = contasUnicas.Select(MapToViewModel).ToList();
 
                 _view.TabelaContas.ItemsSource = contasViewModel;
             } catch (Exception ex)
@@ -141,44 +184,27 @@ namespace Projeto_UVV_Fintech.Controller
                     }
                     else
                     {
-                        // Se o ID não for um número válido, limpa a grade e retorna.
                         _view.TabelaContas.ItemsSource = new List<ContaViewModel>();
                         return new List<ContaViewModel>();
                     }
                 }
 
                 List<Conta> resultado;
-                if (tipoConta == "CP")
+                // Se o filtro especificar um tipo, pegamos o repositório certo do catálogo.
+                if (!string.IsNullOrEmpty(tipoConta) && _contaRepositories.TryGetValue(tipoConta, out var repository))
                 {
-                    resultado = ContaPoupancaRepository.FiltrarContas(
+                    resultado = repository.FiltrarContas(
                     idClienteInt, numerConta, numeroAgencia, tipoConta,
                     nomeTitular, saldo, dataCriacao, saldoMaior, dataMaior);
-                } else if (tipoConta == "CC")
+                }
+                else // Senão, pedimos para todos os repositórios do catálogo filtrarem.
                 {
-                    resultado = ContaCorrenteRepository.FiltrarContas(
-                    idClienteInt, numerConta, numeroAgencia, tipoConta,
-                    nomeTitular, saldo, dataCriacao, saldoMaior, dataMaior);
-                } else
-                {
-                    List<Conta> resultadoPoupanca = ContaPoupancaRepository.FiltrarContas(
-                    idClienteInt, numerConta, numeroAgencia, tipoConta,
-                    nomeTitular, saldo, dataCriacao, saldoMaior, dataMaior);
-                    List<Conta> resultadoCorrente = ContaCorrenteRepository.FiltrarContas(
-                    idClienteInt, numerConta, numeroAgencia, tipoConta,
-                    nomeTitular, saldo, dataCriacao, saldoMaior, dataMaior);
-                    resultado = resultadoPoupanca.Concat(resultadoCorrente).ToList();
+                    resultado = _contaRepositories.Values.SelectMany(repo => repo.FiltrarContas(
+                        idClienteInt, numerConta, numeroAgencia, null,
+                        nomeTitular, saldo, dataCriacao, saldoMaior, dataMaior)).ToList();
                 }
 
-                var contasViewModel = resultado.Select(conta => new ContaViewModel
-                {
-                    ClienteId = conta.Cliente.Id,
-                    Agencia = conta.Agencia,
-                    NumeroConta = conta.NumeroConta,
-                    Tipo = conta.GetType().Name == "ContaCorrente" ? "CC" : "CP",
-                    DataCriacao = conta.DataCriacao,
-                    Saldo = conta.Saldo,
-                    NomeCliente = GetNomeClientePorId(conta.Cliente.Id.ToString())
-                }).ToList();
+                var contasViewModel = resultado.Select(MapToViewModel).ToList();
 
                 _view.TabelaContas.ItemsSource = contasViewModel;
                 return contasViewModel;
@@ -194,40 +220,27 @@ namespace Projeto_UVV_Fintech.Controller
         {
             try
             {
-                Conta? conta = null;
-                if (tipoConta == "CC")
+                if (_contaRepositories.TryGetValue(tipoConta, out var repository))
                 {
-                    conta = ContaCorrenteRepository.ObterContaPorNumero(numConta);
-                    
-                }
-                else if (tipoConta == "CP")
-                {
-                    conta = ContaCorrenteRepository.ObterContaPorNumero(numConta);
-                }
+                    var conta = repository.ObterContaPorNumero(numConta);
+                    if (conta == null)
+                    {
+                        MessageBox.Show("Conta não encontrada.");
+                        return;
+                    }
 
-                if (conta == null)
-                {
-                    MessageBox.Show("Conta não encontrada.");
-                    return;
-                }
-
-                bool sucesso = false;
-                if (tipoConta == "CC")
-                {
-                    sucesso = ContaCorrenteRepository.SacarCorrente(conta.Id, valor);
-                }
-                else if (tipoConta == "CP")
-                {
-                    sucesso = ContaPoupancaRepository.SacarPoupanca(conta.Id, valor);
-                }
-
-                if (sucesso)
-                {
-                    MessageBox.Show($"Saque de R${valor:F2} realizado com sucesso!");
+                    if (repository.Sacar(conta.Id, valor))
+                    {
+                        MessageBox.Show($"Saque de R${valor:F2} realizado com sucesso!");
+                    }
+                    else
+                    {
+                        MessageBox.Show("Falha ao realizar o saque. Verifique o saldo e os dados da conta.");
+                    }
                 }
                 else
                 {
-                    MessageBox.Show("Falha ao realizar o saque. Verifique o saldo e os dados da conta.");
+                    MessageBox.Show("Tipo de conta inválido.");
                 }
             }
             catch (Exception ex)
@@ -240,39 +253,27 @@ namespace Projeto_UVV_Fintech.Controller
         {
             try
             {
-                Conta? conta = null;
-                if (tipoConta == "CC")
+                if (_contaRepositories.TryGetValue(tipoConta, out var repository))
                 {
-                    conta = ContaCorrenteRepository.ObterContaPorNumero(numConta);
-                }
-                else if (tipoConta == "CP")
-                {
-                    conta = ContaPoupancaRepository.ObterContaPorNumero(numConta);
-                }
-
-                if (conta == null)
-                {
-                    MessageBox.Show("Conta não encontrada.");
-                    return;
-                }
-
-                bool sucesso = false;
-                if (tipoConta == "CC")
-                {
-                    sucesso = ContaCorrenteRepository.DepositarCorrente(conta.Id, valor);
-                }
-                else if (tipoConta == "CP")
-                {
-                    sucesso = ContaPoupancaRepository.DepositarPoupanca(conta.Id, valor);
-                }
-
-                if (sucesso)
-                {
-                    MessageBox.Show($"Depósito de R${valor:F2} realizado com sucesso!");
+                    var conta = repository.ObterContaPorNumero(numConta);
+                    if (conta == null)
+                    {
+                        MessageBox.Show("Conta não encontrada.");
+                        return;
+                    }
+                    
+                    if (repository.Depositar(conta.Id, valor))
+                    {
+                        MessageBox.Show($"Depósito de R${valor:F2} realizado com sucesso!");
+                    }
+                    else
+                    {
+                        MessageBox.Show("Falha ao realizar o depósito.");
+                    }
                 }
                 else
                 {
-                    MessageBox.Show("Falha ao realizar o depósito.");
+                    MessageBox.Show("Tipo de conta inválido.");
                 }
             }
             catch (Exception ex)
@@ -285,24 +286,26 @@ namespace Projeto_UVV_Fintech.Controller
         {
             try
             {
-                Conta? contaOrigem = null;
-                if (tipoContaOrigem == "CC")
+                if (!_contaRepositories.TryGetValue(tipoContaOrigem, out var origemRepository))
                 {
-                    contaOrigem = ContaCorrenteRepository.ObterContaPorNumero(numContaOrigem); 
-                }
-                else if (tipoContaOrigem == "CP")
-                {
-                    contaOrigem = ContaPoupancaRepository.ObterContaPorNumero(numContaDestino); 
+                    MessageBox.Show("Tipo de conta de origem inválido.");
+                    return;
                 }
 
+                var contaOrigem = origemRepository.ObterContaPorNumero(numContaOrigem);
                 if (contaOrigem == null)
                 {
                     MessageBox.Show("Conta de origem não encontrada.");
                     return;
                 }
 
-                Conta? contaDestino = (Conta?)ContaCorrenteRepository.FiltrarContas(null, numContaDestino, null, null, null, null, null, null, null).FirstOrDefault()
-                                     ?? (Conta?)ContaPoupancaRepository.FiltrarContas(null, numContaDestino, null, null, null, null, null, null, null).FirstOrDefault();
+                // Busca a conta de destino em todos os repositórios conhecidos.
+                Conta contaDestino = null;
+                foreach (var repo in _contaRepositories.Values)
+                {
+                    contaDestino = repo.ObterContaPorNumero(numContaDestino);
+                    if (contaDestino != null) break;
+                }
 
                 if (contaDestino == null)
                 {
@@ -310,18 +313,7 @@ namespace Projeto_UVV_Fintech.Controller
                     return;
                 }
 
-                bool sucesso = false;
-                if (tipoContaOrigem == "CC")
-                {
-                    sucesso = ContaCorrenteRepository.TransferirCorrente(contaOrigem.Id, contaDestino.Id, valor);
-
-                }
-                else if (tipoContaOrigem == "CP")
-                {
-                    sucesso = ContaPoupancaRepository.TransferirPoupanca(contaOrigem.Id, contaDestino.Id, valor);
-                }
-
-                if (sucesso)
+                if (origemRepository.Transferir(contaOrigem.Id, contaDestino.Id, valor))
                 {
                     MessageBox.Show($"Transferência de R${valor:F2} para a conta {numContaDestino} realizada com sucesso!");
                 }
@@ -340,7 +332,7 @@ namespace Projeto_UVV_Fintech.Controller
         {
             if (int.TryParse(idCliente, out int id))
             {
-                var cliente = ClienteRepository.ObterClientePorId(id);
+                var cliente = _clienteRepository.ObterClientePorId(id);
                 return cliente?.Nome ?? string.Empty;
             }
             return string.Empty;
