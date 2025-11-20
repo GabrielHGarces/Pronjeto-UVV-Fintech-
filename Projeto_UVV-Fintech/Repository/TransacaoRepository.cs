@@ -84,7 +84,7 @@
 ﻿            bool? valorMaior,
 ﻿            bool? dataMaior)
 ﻿        {
-﻿            var transacoes = ListarTransacoes();
+            var transacoes = ListarTransacoes();
 ﻿
 ﻿            if (tipo == "Depósito")
 ﻿            {
@@ -95,18 +95,18 @@
 ﻿                tipo = "Transferencia";
 ﻿            }
 ﻿
-﻿                        var filtrado = transacoes
-﻿                            .Where(t =>
-﻿                                (idTransacao == null || t.Id == idTransacao) &&
-﻿                                (contaRemetente == null || (t.ContaRemetente != null && t.ContaRemetente.NumeroConta == contaRemetente)) &&
-﻿                                (contaDestinatario == null || (t.ContaDestinatario != null && t.ContaDestinatario.NumeroConta == contaDestinatario)) &&
-﻿                                (string.IsNullOrWhiteSpace(tipo) || tipo == "Todos" || t.Tipo.ToString().Contains(tipo, StringComparison.OrdinalIgnoreCase)) &&﻿                    (
-﻿                        valor == null ||
-﻿                        (
-﻿                            valorMaior == true ? t.Valor >= valor :
-﻿                            valorMaior == false ? t.Valor <= valor :
-﻿                            true
-﻿                        )
+            var filtrado = transacoes
+                .Where(t =>
+                    (idTransacao == null || t.Id == idTransacao) &&
+                    (contaRemetente == null || (t.ContaRemetente != null && t.ContaRemetente.NumeroConta == contaRemetente)) &&
+﻿                    (contaDestinatario == null || (t.ContaDestinatario != null && t.ContaDestinatario.NumeroConta == contaDestinatario)) &&
+﻿                    (string.IsNullOrWhiteSpace(tipo) || tipo == "Todos" || t.Tipo.ToString().Contains(tipo, StringComparison.OrdinalIgnoreCase)) &&﻿                    (
+﻿                    valor == null ||
+﻿                    (
+﻿                    valorMaior == true ? t.Valor >= valor :
+﻿                    valorMaior == false ? t.Valor <= valor :
+                        true
+                    )
 ﻿                    ) &&
 ﻿                    (
 ﻿                        dataTransacao == null ||
