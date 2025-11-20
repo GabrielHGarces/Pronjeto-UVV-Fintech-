@@ -39,12 +39,21 @@ namespace Projeto_UVV_Fintech.Repository
         {
             var transacoes = ListarTransacoes();
 
+            if (tipo == "Depósito")
+            {
+                tipo = "Deposito";
+            } 
+            else if (tipo == "Transferência")
+            {
+                tipo = "Transferencia";
+            }
+
             var filtrado = transacoes
                 .Where(t =>
                     (idTransacao == null || t.Id == idTransacao) &&
                     (contaRemetente == null || t.ContaRemetente == contaRemetente) &&
                     (contaDestinatario == null || t.ContaDestinatario == contaDestinatario) &&
-                    (string.IsNullOrWhiteSpace(tipo) || t.Tipo.ToString().Contains(tipo, StringComparison.OrdinalIgnoreCase)) &&
+                    (string.IsNullOrWhiteSpace(tipo) || tipo == "Todos" || t.Tipo.ToString().Contains(tipo, StringComparison.OrdinalIgnoreCase)) &&
                     (
                         valor == null ||
                         (
