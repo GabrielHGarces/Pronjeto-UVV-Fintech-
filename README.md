@@ -63,6 +63,7 @@ A estrutura segue esse padrão principal:
 │   └── imagens/
 │       ├── DiagramaCaseUso.png
 │       ├── DiagramaDeClasses.jpg
+│		├── TrelloDashBoard.png
 │       └── WireFrame.png
 │
 └── README.md
